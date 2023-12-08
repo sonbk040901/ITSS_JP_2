@@ -21,7 +21,7 @@ const UserOptionItem: FC<UserOptionItemProps> = ({
         src={icon}
         className="h-6 aspect-auto"
       />
-      <Typography.Text color="primary" className="font-medium">{title}</Typography.Text>
+      <Typography.Link color="primary" className="font-medium">{title}</Typography.Link>
     </div>
   );
 };

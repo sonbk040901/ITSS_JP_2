@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/states";
 import { logout, selectAuthUserInfo } from "@/states/slices/auth";
 import { SearchOutlined } from "@ant-design/icons";
-import { Avatar, Dropdown, Input } from "antd";
+import { Avatar, Badge, Dropdown, Input, Popover } from "antd";
 import { ItemType } from "antd/es/menu/hooks/useItems";
 import avt from "assets/avt.png";
 import bellIcon from "assets/bell.svg";
@@ -55,14 +55,34 @@ const NavBar: FC<NavBarProps> = () => {
         to="/chat"
       >
         <img
-          className="h-6 aspect-auto"
+          className="h-5 aspect-auto"
           src={messIcon}
         />
       </Link>
-      <img
-        className="h-6 aspect-auto"
-        src={bellIcon}
-      />
+      <Popover
+        title="通知"
+        content={
+          <div>
+            <div className="">ばらばら</div>
+            <hr className="h-[.5px] bg-slate-400" />
+          </div>
+        }
+        placement="bottomRight"
+        arrow
+      >
+        <Badge
+          className="grid place-items-center"
+          color="orange"
+          size="small"
+          status="processing"
+          count={3}
+        >
+          <img
+            className="h-5 aspect-auto"
+            src={bellIcon}
+          />
+        </Badge>
+      </Popover>
       <span className="cursor-pointer">
         <Dropdown
           menu={{

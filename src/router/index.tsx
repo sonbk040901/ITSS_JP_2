@@ -3,6 +3,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Loader from "./Loader";
 const PrivateLayout = Loader(lazy(async () => import("layouts/PrivateLayout")));
 const AuthLayout = Loader(lazy(async () => import("layouts/AuthLayout")));
+const Home = Loader(lazy(async () => import("pages/private/Home")));
+const Hello = Loader(lazy(async () => import("pages/auth/Hello")));
 
 const Router = createBrowserRouter([
   {
@@ -11,7 +13,7 @@ const Router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <div className="text-2xl font-bold">Home</div>,
+        element: <Home />,
       },
     ],
   },
@@ -29,7 +31,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "hello",
-        element: <div>hello</div>,
+        element: <Hello />,
       },
     ],
   },
