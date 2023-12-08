@@ -9,7 +9,7 @@ const Home: FC = () => {
     dispatch(filterUsers("filter"));
   }, [dispatch]);
   return (
-    <div className="flex flex-col items-center gap-7 w-[1000px] max-w-[80%]">
+    <div className="flex py-2 flex-col items-center gap-5 h-full w-[1000px] max-w-[80%] z-[1]">
       <Filter />
       <UserList />
       <Pagination />

@@ -4,6 +4,7 @@ import Loader from "./Loader";
 const PrivateLayout = Loader(lazy(async () => import("layouts/PrivateLayout")));
 const AuthLayout = Loader(lazy(async () => import("layouts/AuthLayout")));
 const Home = Loader(lazy(async () => import("pages/private/Home")));
+const Profile = Loader(lazy(async () => import("pages/private/Profile")));
 const Hello = Loader(lazy(async () => import("pages/auth/Hello")));
 
 const Router = createBrowserRouter([
@@ -14,6 +15,10 @@ const Router = createBrowserRouter([
       {
         path: "",
         element: <Home />,
+      },
+      {
+        path: "profile/:id?",
+        element: <Profile />,
       },
     ],
   },

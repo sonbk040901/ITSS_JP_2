@@ -17,7 +17,7 @@ const PrivateLayout: FC = () => {
   return (
     <Layout className="h-screen w-screen">
       <Header />
-      <Content className="h-full w-full flex items-center justify-center">
+      <Content className="h-full w-full flex items-center justify-center relative bg-white">
         <Outlet />
       </Content>
     </Layout>
