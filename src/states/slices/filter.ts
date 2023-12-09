@@ -18,7 +18,13 @@ interface FilterState {
 }
 const initialState: FilterState = {
   status: "loading",
-  filter: {},
+  filter: {
+    // level: undefined,
+    // age: undefined,
+    // gender: undefined,
+    // nationality: undefined,
+    // province: undefined,
+  },
   pagination: {
     currentPage: 1,
     totalPages: 1,
@@ -51,7 +57,7 @@ const filterSlice = createSlice({
   extraReducers: (builder) =>
     builder
       .addCase(filterUsers.pending, (state) => {
-        state.status ="loading";
+        state.status = "loading";
       })
       .addCase(filterUsers.fulfilled, (state, action) => {
         state.status = "success";
@@ -80,4 +86,5 @@ export const selectFilterPagination = createSelector(
   selectFilter,
   (filter) => filter.pagination,
 );
+export const { setFilter } = filterSlice.actions;
 export default filterSlice.reducer;

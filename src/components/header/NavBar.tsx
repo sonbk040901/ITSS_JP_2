@@ -40,8 +40,20 @@ const NavBar: FC<NavBarProps> = () => {
           />
         ),
       },
+      {
+        key: 0,
+        label: (
+          <div className="">
+            <div className="font-semibold text-sm text-slate-500">
+              {user?.name}
+            </div>
+            <div className="text-xs text-slate-400">{user?.email}</div>
+          </div>
+        ),
+        disabled: true,
+      },
     ],
-    [dispatch, navigate],
+    [dispatch, navigate, user],
   );
   return (
     <div className="flex flex-row items-center gap-3">
