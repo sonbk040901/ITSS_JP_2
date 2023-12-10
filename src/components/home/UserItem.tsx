@@ -87,14 +87,16 @@ const UserItem: FC<UserItemProps> = ({
           </div>
         </Badge>
         <div className="flex flex-col items-center mb-1">
-          <h3 className="m-2 text-[#5591EB]">{name}</h3>
+          <h3 className="m-2 text-[#5591EB] whitespace-nowrap">{name}</h3>
           <span className="m-[1.5px] text-[#5591EB]">{age} 歳</span>
-          <span className="m-[1.5px] text-[#5591EB]">{level ?? "N/A"}</span>
+          <span className="m-[1.5px] text-[#5591EB]">
+            {level ? `N${level}` : "N/A"}
+          </span>
           <span className="m-[1.5px] text-[#5591EB]">
             <span className="font-bold">{numberOfBookmarks}</span> お気に入り人
           </span>
           <span className="m-[1.5px] text-[#5591EB]">
-            {gender ? { male: "男性", female: "女性" }[gender] : "N/A"}
+            {gender ? ["男性", "女性"][gender - 1] : "N/A"}
           </span>
         </div>
         <Button

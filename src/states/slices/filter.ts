@@ -7,7 +7,10 @@ import {
 import { userService } from "services";
 import { Pagination, User, UserBasic } from "types";
 import { RootState } from "..";
-type Filter = Pick<User, "level" | "gender" | "nationality" | "province"> & {
+export type Filter = Pick<
+  User,
+  "level" | "gender" | "nationality" | "province"
+> & {
   age?: number;
 };
 interface FilterState {
@@ -19,29 +22,28 @@ interface FilterState {
 const initialState: FilterState = {
   status: "loading",
   filter: {
-    // level: undefined,
-    // age: undefined,
-    // gender: undefined,
-    // nationality: undefined,
-    // province: undefined,
+    level: null,
+    gender: null,
+    nationality: null,
+    province: null,
   },
   pagination: {
     currentPage: 1,
     totalPages: 1,
-    pageSize: 1,
+    pageSize: 6,
   },
   results: [],
 };
 export const filterUsers = createAsyncThunk(
   "filter/filterUsers",
   async (type: "filter" | Pick<Pagination, "currentPage">, thunkApi) => {
-    const state = thunkApi.getState() as FilterState;
-    const { filter, pagination } = state;
+    const state = thunkApi.getState() as RootState;
+    const { filter, pagination } = state.filter;
     const response = await userService.filterUsers(
       filter,
       type !== "filter"
         ? { ...pagination, currentPage: type.currentPage }
-        : pagination,
+        : { ...pagination, currentPage: 1 },
     );
     return response;
   },

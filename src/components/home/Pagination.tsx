@@ -16,6 +16,7 @@ const Pagination: FC<PaginationProps> = () => {
       defaultCurrent={1}
       total={pagination.totalPages * pagination.pageSize}
       pageSize={pagination.pageSize}
+      current={pagination.currentPage}
       showSizeChanger={false}
       onChange={(currentPage) => dispatch(filterUsers({ currentPage }))}
     />

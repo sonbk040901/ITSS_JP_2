@@ -4,34 +4,39 @@ import {
   selectFilterValue,
   setFilter,
 } from "@/states/slices/filter";
+import { nationality, province } from "@/utils";
 import { Button, Input, Popover, Select, Tooltip } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import filterIcon from "assets/filter.svg";
-import { ChangeEvent, FC } from "react";
+import { ChangeEvent, FC, useState } from "react";
 
 interface FilterProps {}
 
 const Filter: FC<FilterProps> = () => {
+  const [open, setOpen] = useState(false);
   const filter = useAppSelector(selectFilterValue);
   const dispatch = useAppDispatch();
   const levelOptions: DefaultOptionType[] = [
-    { label: "N1", value: "N1" },
-    { label: "N2", value: "N2" },
-    { label: "N3", value: "N3" },
-    { label: "N4", value: "N4" },
-    { label: "N5", value: "N5" },
-    { label: "全部", value: "All" },
+    { label: "N1", value: 1 },
+    { label: "N2", value: 2 },
+    { label: "N3", value: 3 },
+    { label: "N4", value: 4 },
+    { label: "N5", value: 5 },
+    { label: "全部", value: null },
   ];
   const genderOptions: DefaultOptionType[] = [
-    { label: "男性", value: "male" },
-    { label: "女性", value: "female" },
-    { label: "全部", value: "All" },
+    { label: "男性", value: 1 },
+    { label: "女性", value: 2 },
+    { label: "全部", value: null },
   ];
-  const addressOptions: DefaultOptionType[] = [{ label: "全部", value: "All" }];
-  const nationalityOptions: DefaultOptionType[] = [
-    { label: "ベトナム", value: "vietnam" },
-    { label: "全部", value: "All" },
-  ];
+  const addressOptions: DefaultOptionType[] = province.province
+    .map((v: string, i) => ({
+      label: v,
+      value: (i + 1) as number | null,
+    }))
+    .concat([{ label: "全部", value: null }]);
+  const nationalityOptions: DefaultOptionType[] =
+    nationality.nationality.concat({ value: null, label: "全部" });
   const onChangeAge = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     const reg = /^-?\d*(\.\d*)?$/;
@@ -42,6 +47,8 @@ const Filter: FC<FilterProps> = () => {
   return (
     <div className="self-end">
       <Popover
+        open={open}
+        onOpenChange={setOpen}
         content={
           <div className="flex items-stretch justify-between flex-col w-56 gap-2">
             <span className="border-b-[1px] text-center font-bold text-lg pb-1">
@@ -56,13 +63,13 @@ const Filter: FC<FilterProps> = () => {
               </label>
               <Select
                 id="level"
-                value={filter.level || ("All" as typeof filter.level | "All")}
+                value={filter.level}
                 options={levelOptions}
                 onChange={(value) => {
                   dispatch(
                     setFilter({
                       ...filter,
-                      level: value !== "All" ? value : undefined,
+                      level: value,
                     }),
                   );
                 }}
@@ -77,13 +84,13 @@ const Filter: FC<FilterProps> = () => {
               </label>
               <Select
                 id="gender"
-                value={filter.gender || ("All" as typeof filter.gender | "All")}
+                value={filter.gender}
                 options={genderOptions}
                 onChange={(value) => {
                   dispatch(
                     setFilter({
                       ...filter,
-                      gender: value !== "All" ? value : undefined,
+                      gender: value,
                     }),
                   );
                 }}
@@ -112,16 +119,13 @@ const Filter: FC<FilterProps> = () => {
               </label>
               <Select
                 id="nationality"
-                value={
-                  filter.nationality ||
-                  ("All" as typeof filter.nationality | "All")
-                }
+                value={filter.nationality}
                 options={nationalityOptions}
                 onChange={(value) => {
                   dispatch(
                     setFilter({
                       ...filter,
-                      nationality: value !== "All" ? value : undefined,
+                      nationality: value,
                     }),
                   );
                 }}
@@ -136,15 +140,13 @@ const Filter: FC<FilterProps> = () => {
               </label>
               <Select
                 id="address"
-                value={
-                  filter.province || ("All" as typeof filter.province | "All")
-                }
+                value={filter.province}
                 options={addressOptions}
                 onChange={(value) => {
                   dispatch(
                     setFilter({
                       ...filter,
-                      province: value !== "All" ? value : undefined,
+                      province: value,
                     }),
                   );
                 }}
@@ -154,7 +156,10 @@ const Filter: FC<FilterProps> = () => {
               <Button
                 shape="round"
                 type="primary"
-                onClick={() => dispatch(filterUsers("filter"))}
+                onClick={() => {
+                  dispatch(filterUsers("filter"));
+                  setOpen(false);
+                }}
               >
                 申し込み
               </Button>
@@ -163,7 +168,15 @@ const Filter: FC<FilterProps> = () => {
                 shape="round"
                 type="default"
                 onClick={() => {
-                  dispatch(setFilter({}));
+                  dispatch(
+                    setFilter({
+                      gender: null,
+                      level: null,
+                      nationality: null,
+                      province: null,
+                    }),
+                  );
+                  setOpen(false);
                 }}
               >
                 キャンセル
@@ -175,7 +188,10 @@ const Filter: FC<FilterProps> = () => {
         placement="bottomRight"
         arrow={false}
       >
-        <Tooltip title="クリックしてフィルターを開きます" placement="bottom">
+        <Tooltip
+          title="クリックしてフィルターを開きます"
+          placement="bottom"
+        >
           <img
             className="w-6 h-6 cursor-pointer drop-shadow-sm hover:drop-shadow-md"
             src={filterIcon}
