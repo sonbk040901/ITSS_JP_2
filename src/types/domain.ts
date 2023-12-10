@@ -1,5 +1,5 @@
 import { Nullable, Range } from "./util";
-type _User = {
+export type _User = {
   id: number;
   name: string;
   email: string;

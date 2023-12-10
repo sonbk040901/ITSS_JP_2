@@ -1,31 +1,25 @@
 import { Pagination, User, UserBasic } from "types";
 import { storeService } from "utils";
 import { axiosInstance } from "./axios";
-// import { store } from "@/states";
 import { Filter } from "@/states/slices/filter";
 import { Response } from "@/types/response";
 const userService = {
   auth: async (): Promise<User> => {
-    // const token = storeService.get<string>("token");
-    // if (!token) {
-    //   throw new Error("No token found");
-    // }
-    // const response = await axiosInstance.get("/auth", {
-    // TODO: call API to get user info
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return {
-      id: 1,
-      name: "John Doe",
-      email: "leducson007@gmai.com",
-      avatar: "https://i.pravatar.cc/300",
-      phone: "0123456789",
-      level: 2,
-      birthday: "2001-01-01",
-      certificate: null,
-      gender: 1,
-      nationality: "VN",
-      province: 1,
-    };
+    const token = storeService.get<string>("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    const response = await axiosInstance.get<User>("/auth/profile", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  login: async (form: {
+    username?: string;
+    password?: string;
+  }): Promise<void> => {
+    const response = await axiosInstance.post("/auth/login", form);
+    storeService.store("token", response.data.access_token);
   },
   logout: async (): Promise<void> => {
     storeService.remove("token");
@@ -35,10 +29,10 @@ const userService = {
     filter: Filter,
     pagination?: Pagination,
   ): Promise<{ users: UserBasic[] } & Pagination> => {
-    // const token = storeService.get<string>("token");
-    // if (!token) {
-    //   throw new Error("No token found");
-    // }
+    const token = storeService.get<string>("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
     const response = await axiosInstance.get<
       Response<UserBasic[]> & {
         meta: {
@@ -57,6 +51,7 @@ const userService = {
           : 0,
         ...filter,
       },
+      headers: { Authorization: `Bearer ${token}` },
     });
     const data = response.data;
     return {
@@ -65,6 +60,19 @@ const userService = {
       totalPages: data.meta.pageCount,
       pageSize: data.meta.take || 6,
     };
+  },
+  getUser: async (id: string): Promise<User> => {
+    const token = storeService.get<string>("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    const response = await axiosInstance.get<Response<User>>(`/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // TODO: Data trả về thiếu mail, sai trường phone
+    console.log(response.data.data);
+
+    return response.data.data;
   },
 };
 

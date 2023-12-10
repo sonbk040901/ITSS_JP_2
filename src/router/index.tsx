@@ -7,6 +7,9 @@ const PrivateLayout = Loader(lazy(async () => import("layouts/PrivateLayout")));
 const AuthLayout = Loader(lazy(async () => import("layouts/AuthLayout")));
 const Home = Loader(lazy(async () => import("pages/private/Home")));
 const Profile = Loader(lazy(async () => import("pages/private/Profile")));
+const PersonalProfile = Loader(
+  lazy(async () => import("pages/private/PersonalProfile")),
+);
 const Hello = Loader(lazy(async () => import("pages/auth/Hello")));
 const Notfound = Loader(lazy(async () => import("pages/Notfound")));
 
@@ -20,8 +23,12 @@ const Router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "profile/:id?",
+        path: "profile/:id",
         element: <Profile />,
+      },
+      {
+        path: "profile",
+        element: <PersonalProfile />,
       },
     ],
   },
@@ -31,7 +38,7 @@ const Router = createBrowserRouter([
     children: [
       {
         path: "login",
-        element: <Login/>
+        element: <Login />,
       },
       {
         path: "register",
