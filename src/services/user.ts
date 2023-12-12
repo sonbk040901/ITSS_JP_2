@@ -1,8 +1,7 @@
-import { Pagination, User, UserBasic } from "types";
+import { Pagination, User, UserBasic, Response, RawFilterUser } from "types";
 import { storeService } from "utils";
 import { axiosInstance } from "./axios";
 import { Filter } from "@/states/slices/filter";
-import { Response } from "@/types/response";
 const userService = {
   auth: async (): Promise<User> => {
     const token = storeService.get<string>("token");
@@ -34,7 +33,7 @@ const userService = {
       throw new Error("No token found");
     }
     const response = await axiosInstance.get<
-      Response<UserBasic[]> & {
+      Response<RawFilterUser[]> & {
         meta: {
           take?: number;
           itemCount: number;
@@ -54,8 +53,17 @@ const userService = {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = response.data;
+    const users = data.data.map((u): UserBasic => {
+      return {
+        ...u,
+        isBookmarked: u.bookmarked === "1",
+        numberOfBookmarks: Number(u.bookmark_count),
+      };
+    });
+    console.log(data);
+
     return {
-      users: data.data,
+      users,
       currentPage: pagination?.currentPage || 1,
       totalPages: data.meta.pageCount,
       pageSize: data.meta.take || 6,
@@ -73,6 +81,21 @@ const userService = {
     console.log(response.data.data);
 
     return response.data.data;
+  },
+  bookmarkUser: async (id: number): Promise<void> => {
+    const token = storeService.get<string>("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    await axiosInstance.post(
+      `/bookmarks`,
+      {
+        receiver_id: id,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
   },
 };
 

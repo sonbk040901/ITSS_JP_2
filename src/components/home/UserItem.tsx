@@ -1,9 +1,17 @@
 import avt from "@/assets/avatar/a1.svg";
 import heartBlack from "@/assets/heart-black.svg";
 import heartRed from "@/assets/heart-red.svg";
+import { useAppDispatch, useAppSelector } from "@/states";
+import {
+  resetBookmark,
+  selectBookmarkId,
+  selectBookmarkStatus,
+  togleBookmard,
+} from "@/states/slices/bookmark";
+import { nationality } from "@/utils";
 import { Badge, Button, Card, Skeleton, message } from "antd";
-import vnFlag from "assets/vn.svg";
-import { FC, useState } from "react";
+import { ArgsProps } from "antd/es/message";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserBasic } from "types";
 type UserItemProps = UserBasic & { loading?: boolean };
@@ -15,16 +23,58 @@ const UserItem: FC<UserItemProps> = ({
   gender,
   birthday,
   level,
+  nationality: nationalityProp,
   isBookmarked: isBookmarkedProp,
   numberOfBookmarks,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const bookmarkStatus = useAppSelector(selectBookmarkStatus);
+  const bookmarkId = useAppSelector(selectBookmarkId);
+  const dispatch = useAppDispatch();
   const [isBookmarked, setIsBookmarked] = useState(isBookmarkedProp);
   const [messageApi, contextHolder] = message.useMessage();
+  const key = "updatable";
   const navigate = useNavigate();
+  useEffect(() => {
+    if (bookmarkId !== id || bookmarkStatus === "idle") return;
+    const messProps: ArgsProps =
+      bookmarkStatus === "loading"
+        ? {
+            key,
+            type: "loading",
+            content: isBookmarked
+              ? "ブックマークを解除しています"
+              : "ブックマークしています",
+          }
+        : bookmarkStatus === "success"
+        ? {
+            key,
+            type: "success",
+            content: isBookmarked
+              ? "ブックマークしました"
+              : "ブックマークを解除しました",
+          }
+        : {
+            key,
+            type: "error",
+            content: isBookmarked
+              ? "ブックマークに失敗しました"
+              : "友達ではありませんのでブックマークできませんでした",
+          };
+    if (bookmarkStatus === "error" || bookmarkStatus === "success") {
+      dispatch(resetBookmark());
+    }
+    if (bookmarkStatus === "success") {
+      setIsBookmarked(!isBookmarked);
+    }
+    messageApi.open({ ...messProps, duration: 1.5 });
+  }, [bookmarkId, bookmarkStatus, dispatch, id, isBookmarked, messageApi]);
   const age = birthday
     ? new Date().getFullYear() - new Date(birthday).getFullYear()
     : "N/A";
+  const flag = nationality.nationality.find(
+    (item) => item.value === nationalityProp || item.value === "OTHER",
+  )?.flag;
   return (
     <Card
       bordered
@@ -35,7 +85,10 @@ const UserItem: FC<UserItemProps> = ({
       {contextHolder}
       <img
         className="h-6 aspect-auto absolute top-3 left-3"
-        src={vnFlag}
+        style={{
+          filter: "drop-shadow(0px 1px 1.5px rgba(37, 37, 37, 0.25))",
+        }}
+        src={flag}
         alt="ds"
       />
       <div className="flex flex-col items-center w-full h-full">
@@ -46,25 +99,7 @@ const UserItem: FC<UserItemProps> = ({
               className="h-6 aspect-auto"
               src={isBookmarked ? heartRed : heartBlack}
               onClick={() => {
-                setIsBookmarked(!isBookmarked);
-                const key = "updatable";
-                messageApi.open({
-                  key,
-                  type: "loading",
-                  content: isBookmarked
-                    ? "ブックマークを解除しています"
-                    : "ブックマークしています",
-                });
-                setTimeout(() => {
-                  messageApi.open({
-                    key,
-                    type: "success",
-                    content: isBookmarked
-                      ? "ブックマークを解除しました"
-                      : "ブックマークしました",
-                    duration: 2,
-                  });
-                }, 1000);
+                dispatch(togleBookmard(id));
               }}
             />
           }

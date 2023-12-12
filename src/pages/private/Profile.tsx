@@ -74,7 +74,7 @@ const Profile: FC = () => {
             <div className="h-20 w-20 rounded-full grid overflow-hidden bg-white shadow-md self-center">
               <img
                 className="w-full h-full object-contain shadow-sm"
-                src={avt}
+                src={userInfo?.avatar ?? avt}
                 alt="avatar"
               />
             </div>

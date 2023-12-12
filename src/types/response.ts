@@ -1,5 +1,11 @@
 import { User } from "./domain";
-
+export type RawFilterUser = (Omit<
+  User,
+  "email" | "phone" | "certificate" | "province"
+> & {
+  bookmarked: "0" | "1";
+  bookmark_count: `${number}`;
+});
 export type UserBasic = Omit<
   User,
   "email" | "phone" | "certificate" | "province"
