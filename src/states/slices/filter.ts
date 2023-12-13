@@ -14,14 +14,13 @@ export type Filter = Pick<
   age?: number;
 };
 interface FilterState {
-  status: "loading" | "success" | "error";
+  status: "loading" | "success" | "error" | "idle";
   filter: Filter;
   pagination: Pagination;
   results: UserBasic[];
-  bookmarkStatus: "idel" | "loading" | "success" | "error";
 }
 const initialState: FilterState = {
-  status: "loading",
+  status: "idle",
   filter: {
     level: null,
     gender: null,
@@ -34,7 +33,6 @@ const initialState: FilterState = {
     pageSize: 6,
   },
   results: [],
-  bookmarkStatus: "idel",
 };
 export const filterUsers = createAsyncThunk(
   "filter/filterUsers",
@@ -48,25 +46,6 @@ export const filterUsers = createAsyncThunk(
         : { ...pagination, currentPage: 1 },
     );
     return response;
-  },
-);
-export const bookmarkUser = createAsyncThunk(
-  "filter/bookmarkUser",
-  async (id: number, thunkApi) => {
-    const state = thunkApi.getState() as RootState;
-    const { results } = state.filter;
-    const index = results.findIndex((u) => u.id === id);
-    const result = results[index];
-    const bookmarked = result.isBookmarked;
-    await userService.bookmarkUser(id);
-    result.isBookmarked = !bookmarked;
-    result.numberOfBookmarks += bookmarked ? -1 : 1;
-    const a = { ...result } as unknown as UserBasic;
-    const i = index as unknown as number;
-    return {
-      index: i,
-      result: a,
-    };
   },
 );
 const filterSlice = createSlice({
@@ -91,19 +70,6 @@ const filterSlice = createSlice({
       .addCase(filterUsers.rejected, (state) => {
         state.status = "error";
       })
-      .addCase(bookmarkUser.pending, (state) => {
-        state.bookmarkStatus = "loading";
-      })
-      .addCase(bookmarkUser.fulfilled, (state, action) => {
-        state.bookmarkStatus = "success";
-        const { index, result } = action.payload;
-        const results = [...state.results];
-        results[index] = result;
-        state.results = results;
-      })
-      .addCase(bookmarkUser.rejected, (state) => {
-        state.bookmarkStatus = "error";
-      }),
 });
 export const selectFilter = (state: RootState) => state.filter;
 export const selectFilterStatus = createSelector(

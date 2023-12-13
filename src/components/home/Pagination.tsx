@@ -8,8 +8,6 @@ interface PaginationProps {}
 const Pagination: FC<PaginationProps> = () => {
   const dispatch = useAppDispatch();
   const pagination = useAppSelector(selectFilterPagination);
-  console.log(pagination);
-  
   return (
     <Pagi
       size="small"

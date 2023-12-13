@@ -1,12 +1,16 @@
-import { Progress, Spin } from "antd";
+import { Spin } from "antd";
 import { FC, Suspense } from "react";
 
 const LayoutLoading = () => (
-  <Progress
-    status="active"
-    showInfo={false}
-    percent={100}
-  />
+  // <Progress
+  //   status="active"
+  //   showInfo={false}
+  //   percent={100}
+  // />
+
+  <div className="w-full h-[100vh] flex justify-center items-center">
+    <Spin size="large" />
+  </div>
 );
 const AppLoading = () => (
   <div className="w-full h-[100vh] flex justify-center items-center">

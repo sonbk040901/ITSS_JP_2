@@ -1,5 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/states";
 import { logout, selectAuthUserInfo } from "@/states/slices/auth";
+import {
+  fetchNotification,
+  selectNotificationData,
+} from "@/states/slices/notification";
 import { SearchOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Dropdown, Input, Popover } from "antd";
 import { ItemType } from "antd/es/menu/hooks/useItems";
@@ -8,14 +12,14 @@ import bellIcon from "assets/bell.svg";
 import logoutIcon from "assets/logout.svg";
 import messIcon from "assets/mess.svg";
 import profileIcon from "assets/profile.svg";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import NotiItem from "./NotiItem";
 import UserOptionItem from "./UserOptionItem";
 
-interface NavBarProps {}
-
-const NavBar: FC<NavBarProps> = () => {
+const NavBar: FC = () => {
   const user = useAppSelector(selectAuthUserInfo);
+  const notifications = useAppSelector(selectNotificationData);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const items: ItemType[] = useMemo(
@@ -55,6 +59,9 @@ const NavBar: FC<NavBarProps> = () => {
     ],
     [dispatch, navigate, user],
   );
+  useEffect(() => {
+    dispatch(fetchNotification());
+  }, [dispatch]);
   return (
     <div className="flex flex-row items-center gap-3">
       <Input
@@ -73,10 +80,15 @@ const NavBar: FC<NavBarProps> = () => {
       </Link>
       <Popover
         title="通知"
+        trigger={"click"}
         content={
-          <div>
-            <div className="">ばらばら</div>
-            <hr className="h-[.5px] bg-slate-400" />
+          <div className="w-52 pb-3">
+            {notifications.map((notification) => (
+              <NotiItem
+                key={notification.id}
+                notification={notification}
+              />
+            ))}
           </div>
         }
         placement="bottomRight"
@@ -87,10 +99,10 @@ const NavBar: FC<NavBarProps> = () => {
           color="orange"
           size="small"
           status="processing"
-          count={3}
+          count={notifications.length}
         >
           <img
-            className="h-5 aspect-auto"
+            className="h-5 aspect-auto cursor-pointer"
             src={bellIcon}
           />
         </Badge>

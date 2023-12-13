@@ -8,11 +8,9 @@ import { nationality, province } from "@/utils";
 import { Button, Input, Popover, Select, Tooltip } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import filterIcon from "assets/filter.svg";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, FormEvent, useState } from "react";
 
-interface FilterProps {}
-
-const Filter: FC<FilterProps> = () => {
+const Filter: FC = () => {
   const [open, setOpen] = useState(false);
   const filter = useAppSelector(selectFilterValue);
   const dispatch = useAppDispatch();
@@ -35,14 +33,32 @@ const Filter: FC<FilterProps> = () => {
       value: (i + 1) as number | null,
     }))
     .concat([{ label: "全部", value: null }]);
-  const nationalityOptions: DefaultOptionType[] =
-    nationality.nationality.concat({ value: null, label: "全部" });
-  const onChangeAge = (e: ChangeEvent<HTMLInputElement>) => {
+  const nationalityOptions: DefaultOptionType[] = [
+    ...nationality.nationality,
+    { label: "全部", value: null },
+  ];
+  const handleChangeAge = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     const reg = /^-?\d*(\.\d*)?$/;
     if (reg.test(value) || value === "" || value === "-") {
       dispatch(setFilter({ ...filter, age: Number(value) }));
     }
+  };
+  const handleSubmitFilter = (e: FormEvent) => {
+    e.preventDefault();
+    dispatch(filterUsers("filter"));
+    setOpen(false);
+  };
+  const handleCancelFilter = () => {
+    dispatch(
+      setFilter({
+        gender: null,
+        level: null,
+        nationality: null,
+        province: null,
+      }),
+    );
+    setOpen(false);
   };
   return (
     <div className="self-end">
@@ -50,7 +66,10 @@ const Filter: FC<FilterProps> = () => {
         open={open}
         onOpenChange={setOpen}
         content={
-          <div className="flex items-stretch justify-between flex-col w-56 gap-2">
+          <form
+            onSubmit={handleSubmitFilter}
+            className="flex items-stretch justify-between flex-col w-56 gap-2"
+          >
             <span className="border-b-[1px] text-center font-bold text-lg pb-1">
               フィルター
             </span>
@@ -106,7 +125,7 @@ const Filter: FC<FilterProps> = () => {
               <Input
                 id="age"
                 value={filter.age || ""}
-                onChange={onChangeAge}
+                onChange={handleChangeAge}
                 placeholder="年齢を入力してください"
               />
             </div>
@@ -156,10 +175,7 @@ const Filter: FC<FilterProps> = () => {
               <Button
                 shape="round"
                 type="primary"
-                onClick={() => {
-                  dispatch(filterUsers("filter"));
-                  setOpen(false);
-                }}
+                htmlType="submit"
               >
                 申し込み
               </Button>
@@ -167,22 +183,12 @@ const Filter: FC<FilterProps> = () => {
                 danger
                 shape="round"
                 type="default"
-                onClick={() => {
-                  dispatch(
-                    setFilter({
-                      gender: null,
-                      level: null,
-                      nationality: null,
-                      province: null,
-                    }),
-                  );
-                  setOpen(false);
-                }}
+                onClick={handleCancelFilter}
               >
                 キャンセル
               </Button>
             </div>
-          </div>
+          </form>
         }
         trigger={["click"]}
         placement="bottomRight"

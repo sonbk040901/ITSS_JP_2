@@ -2,6 +2,7 @@ import { Pagination, User, UserBasic, Response, RawFilterUser } from "types";
 import { storeService } from "utils";
 import { axiosInstance } from "./axios";
 import { Filter } from "@/states/slices/filter";
+import { UserProfile } from "@/types/domain";
 const userService = {
   auth: async (): Promise<User> => {
     const token = storeService.get<string>("token");
@@ -23,7 +24,6 @@ const userService = {
   logout: async (): Promise<void> => {
     storeService.remove("token");
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   filterUsers: async (
     filter: Filter,
     pagination?: Pagination,
@@ -60,8 +60,6 @@ const userService = {
         numberOfBookmarks: Number(u.bookmark_count),
       };
     });
-    console.log(data);
-
     return {
       users,
       currentPage: pagination?.currentPage || 1,
@@ -69,18 +67,20 @@ const userService = {
       pageSize: data.meta.take || 6,
     };
   },
-  getUser: async (id: string): Promise<User> => {
+  getUserProfile: async (id: string): Promise<UserProfile> => {
     const token = storeService.get<string>("token");
     if (!token) {
       throw new Error("No token found");
     }
-    const response = await axiosInstance.get<Response<User>>(`/users/${id}`, {
+    const response = await axiosInstance.get<
+      Response<Omit<UserProfile, "isBookmarked"> & { bookmarked: "0" | "1" }>
+    >(`/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    // TODO: Data trả về thiếu mail, sai trường phone
-    console.log(response.data.data);
-
-    return response.data.data;
+    return {
+      ...response.data.data,
+      isBookmarked: response.data.data.bookmarked === "1",
+    };
   },
   bookmarkUser: async (id: number): Promise<void> => {
     const token = storeService.get<string>("token");
@@ -100,76 +100,3 @@ const userService = {
 };
 
 export default userService;
-// {
-//   users: [
-//     {
-//       id: id,
-//       name: "Lê Đức Sơn",
-//       avatar: "https://i.pravatar.cc/230",
-//       birthday: "2001-01-01",
-//       gender: 1,
-//       level: 2,
-//       nationality: "Vietnam",
-//       isBookmarked: false,
-//       numberOfBookmarks: 0,
-//     },
-//     {
-//       id: id + 1,
-//       name: "Lê Minh Đức",
-//       avatar: "https://i.pravatar.cc/200",
-//       birthday: "2000-01-01",
-//       gender: "male",
-//       level: "N2",
-//       nationality: "Vietnam",
-//       isBookmarked: false,
-//       numberOfBookmarks: 10,
-//     },
-//     {
-//       id: id + 2,
-//       name: "Lương Thị Tâm",
-//       avatar: "https://i.pravatar.cc/250",
-//       birthday: "1997-01-01",
-//       gender: "male",
-//       level: "N2",
-//       nationality: "Vietnam",
-//       isBookmarked: false,
-//       numberOfBookmarks: 24,
-//     },
-//     {
-//       id: id + 3,
-//       name: "Đinh Thị Thu Hà",
-//       avatar: "https://i.pravatar.cc/300",
-//       birthday: "1999-01-01",
-//       gender: "male",
-//       level: "N2",
-//       nationality: "Vietnam",
-//       isBookmarked: true,
-//       numberOfBookmarks: 5,
-//     },
-//     {
-//       id: id + 4,
-//       name: "Trịnh Huy Bằng",
-//       avatar: "https://i.pravatar.cc/350",
-//       birthday: "1999-01-01",
-//       gender: "male",
-//       level: "N2",
-//       nationality: "Vietnam",
-//       isBookmarked: false,
-//       numberOfBookmarks: 7,
-//     },
-//     {
-//       id: id + 5,
-//       name: "Ngô Bảo Đại",
-//       avatar: "https://i.pravatar.cc/400",
-//       birthday: "1999-01-01",
-//       gender: "male",
-//       level: "N2",
-//       nationality: "Vietnam",
-//       isBookmarked: true,
-//       numberOfBookmarks: 0,
-//     },
-//   ],
-//   currentPage: pagination?.currentPage || 1,
-//   totalPages: 10,
-//   pageSize: 6,
-// };

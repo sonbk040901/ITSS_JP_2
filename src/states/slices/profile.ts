@@ -1,15 +1,15 @@
-import { userService } from "services";
 import {
   createAsyncThunk,
   createSelector,
   createSlice,
 } from "@reduxjs/toolkit";
-import { User } from "types/domain";
+import { userService } from "services";
+import { UserProfile } from "types/domain";
 import { RootState } from "..";
 
 interface ProfileState {
   status: "loading" | "idle" | "modify";
-  userInfo?: User;
+  userInfo?: UserProfile;
 }
 const initialState: ProfileState = {
   status: "loading",
@@ -17,7 +17,7 @@ const initialState: ProfileState = {
 };
 export const fetchUserInfo = createAsyncThunk(
   "profile/fetchUserInfo",
-  userService.getUser,
+  userService.getUserProfile,
 );
 
 export const profileSlice = createSlice({

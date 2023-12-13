@@ -11,12 +11,29 @@ export type _User = {
   province: Range<1, 64>[number];
   birthday: string;
   nationality: string;
+  filter?: `${number}`;
 };
-export type User = Nullable<_User, Exclude<keyof _User, "id" | "birthday">>;
+export type UserProfile = User & {
+  isFriend: boolean;
+  isBookmarked: boolean;
+};
+export type User = Nullable<
+  _User,
+  Exclude<keyof _User, "id" | "birthday" | "filter">
+>;
 export type Message = {
   id: number;
   senderId: number;
   receiverId: number;
   content: string;
   createdAt: string;
+};
+/**
+  type: 1: friend request, 2: add friend req has been accepted, 3: add friend req has been rejected
+ */
+export type Notification = {
+  id: number;
+  senderId: number;
+  type: Range<1, 4>[number];
+  time: string;
 };

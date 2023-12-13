@@ -1,17 +1,9 @@
 import avt from "@/assets/avatar/a1.svg";
 import heartBlack from "@/assets/heart-black.svg";
 import heartRed from "@/assets/heart-red.svg";
-import { useAppDispatch, useAppSelector } from "@/states";
-import {
-  resetBookmark,
-  selectBookmarkId,
-  selectBookmarkStatus,
-  togleBookmard,
-} from "@/states/slices/bookmark";
 import { nationality } from "@/utils";
-import { Badge, Button, Card, Skeleton, message } from "antd";
-import { ArgsProps } from "antd/es/message";
-import { FC, useEffect, useState } from "react";
+import { Badge, Button, Card, Skeleton } from "antd";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserBasic } from "types";
 type UserItemProps = UserBasic & { loading?: boolean };
@@ -24,57 +16,26 @@ const UserItem: FC<UserItemProps> = ({
   birthday,
   level,
   nationality: nationalityProp,
-  isBookmarked: isBookmarkedProp,
+  isBookmarked,
   numberOfBookmarks,
+  filter,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const bookmarkStatus = useAppSelector(selectBookmarkStatus);
-  const bookmarkId = useAppSelector(selectBookmarkId);
-  const dispatch = useAppDispatch();
-  const [isBookmarked, setIsBookmarked] = useState(isBookmarkedProp);
-  const [messageApi, contextHolder] = message.useMessage();
-  const key = "updatable";
   const navigate = useNavigate();
-  useEffect(() => {
-    if (bookmarkId !== id || bookmarkStatus === "idle") return;
-    const messProps: ArgsProps =
-      bookmarkStatus === "loading"
-        ? {
-            key,
-            type: "loading",
-            content: isBookmarked
-              ? "ブックマークを解除しています"
-              : "ブックマークしています",
-          }
-        : bookmarkStatus === "success"
-        ? {
-            key,
-            type: "success",
-            content: isBookmarked
-              ? "ブックマークしました"
-              : "ブックマークを解除しました",
-          }
-        : {
-            key,
-            type: "error",
-            content: isBookmarked
-              ? "ブックマークに失敗しました"
-              : "友達ではありませんのでブックマークできませんでした",
-          };
-    if (bookmarkStatus === "error" || bookmarkStatus === "success") {
-      dispatch(resetBookmark());
-    }
-    if (bookmarkStatus === "success") {
-      setIsBookmarked(!isBookmarked);
-    }
-    messageApi.open({ ...messProps, duration: 1.5 });
-  }, [bookmarkId, bookmarkStatus, dispatch, id, isBookmarked, messageApi]);
   const age = birthday
     ? new Date().getFullYear() - new Date(birthday).getFullYear()
     : "N/A";
   const flag = nationality.nationality.find(
     (item) => item.value === nationalityProp || item.value === "OTHER",
   )?.flag;
+  const matchingRate = filter ? Number(Number(filter).toFixed()) : null;
+  const matchingRateColor = matchingRate
+    ? matchingRate < 50
+      ? "red"
+      : matchingRate < 90
+      ? "orange"
+      : "green"
+    : "gray";
   return (
     <Card
       bordered
@@ -82,7 +43,6 @@ const UserItem: FC<UserItemProps> = ({
       className="w-[200px] bg-[#EFF6FC] border-[#5591EB] hover:border-[#5591EB]
       relative"
     >
-      {contextHolder}
       <img
         className="h-6 aspect-auto absolute top-3 left-3"
         style={{
@@ -91,6 +51,17 @@ const UserItem: FC<UserItemProps> = ({
         src={flag}
         alt="ds"
       />
+      {matchingRate && (
+        <div
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white
+      grid place-items-center
+      shadow-sm border-[1px]"
+        >
+          <span className={`text-xs text-[${matchingRateColor}]`}>
+            {matchingRate}%
+          </span>
+        </div>
+      )}
       <div className="flex flex-col items-center w-full h-full">
         <Badge
           offset={[10, 70]}
@@ -98,9 +69,6 @@ const UserItem: FC<UserItemProps> = ({
             <img
               className="h-6 aspect-auto"
               src={isBookmarked ? heartRed : heartBlack}
-              onClick={() => {
-                dispatch(togleBookmard(id));
-              }}
             />
           }
         >

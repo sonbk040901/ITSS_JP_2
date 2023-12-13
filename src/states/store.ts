@@ -4,13 +4,15 @@ import filter from "./slices/filter";
 import authForm from "./slices/authForm";
 import profile from "./slices/profile";
 import bookmark from "./slices/bookmark";
+import notification from "./slices/notification";
 const store = configureStore({
   reducer: {
     auth,
     filter,
     authForm,
     profile,
-    bookmark
+    bookmark,
+    notification,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

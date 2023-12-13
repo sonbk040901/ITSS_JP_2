@@ -3,11 +3,13 @@ import { selectAuthUserInfo } from "@/states/slices/auth";
 import { fetchUserInfo, selectProfileUserInfo } from "@/states/slices/profile";
 import { nationality } from "@/utils";
 import { getProvinceByValue } from "@/utils/province";
-import { Button, Image, message } from "antd";
+import { Badge, Button, Image, message } from "antd";
 import Card from "antd/es/card/Card";
 import avt from "assets/avatar/a1.svg";
 import back from "assets/back.svg";
 import jlpt from "assets/jlpt.svg";
+import heartBlack from "@/assets/heart-black.svg";
+import heartRed from "@/assets/heart-red.svg";
 import { FC, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -47,10 +49,10 @@ const Profile: FC = () => {
     messageApi
       .open({
         type: "loading",
-        content: "Kết bạn nhé..",
-        duration: 2.5,
+        content: "友達リクエストを送信しています",
+        duration: 1.5,
       })
-      .then(() => message.success("Chờ nó phản hồi nhé", 2.5));
+      .then(() => message.success("応答するまで待ちなさい", 1.5));
   };
 
   return (
@@ -71,13 +73,22 @@ const Profile: FC = () => {
         <Card className="shadow-md w-[300px] bg-[#EFF6FC] border-[#5591EB]">
           {contextHolder}
           <div className="flex flex-col">
-            <div className="h-20 w-20 rounded-full grid overflow-hidden bg-white shadow-md self-center">
+            <Badge
+              offset={[10, 70]}
+              count={
+                <img
+                  className="h-6 aspect-auto"
+                  src={userInfo?.isBookmarked ? heartRed : heartBlack}
+                />
+              }
+              className="h-20 w-20 grid self-center"
+            >
               <img
-                className="w-full h-full object-contain shadow-sm"
+                className="w-full h-full rounded-full shadow-md object-contain"
                 src={userInfo?.avatar ?? avt}
                 alt="avatar"
               />
-            </div>
+            </Badge>
             <div className=" m-2 px-2 text-center">{userInfo?.name}</div>
             <div className=" m-2 px-2 flex flex-col">
               <div className="flex-grow">
@@ -118,12 +129,23 @@ const Profile: FC = () => {
               </div>
             </div>
             <div className="self-center">
-              <Button
-                type="primary"
-                onClick={success}
-              >
-                友達になる
-              </Button>
+              {userInfo?.isFriend ? (
+                <Button
+                  type="primary"
+                  className="font-bold"
+                  onClick={success}
+                >
+                  友達になる
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  className="font-bold"
+                  danger
+                >
+                  友達を解除する
+                </Button>
+              )}
             </div>
           </div>
         </Card>
