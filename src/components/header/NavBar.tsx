@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/states";
 import { logout, selectAuthUserInfo } from "@/states/slices/auth";
+import { clearFilter, filterUsers } from "@/states/slices/filter";
 import {
   fetchNotification,
   selectNotificationData,
@@ -12,8 +13,8 @@ import bellIcon from "assets/bell.svg";
 import logoutIcon from "assets/logout.svg";
 import messIcon from "assets/mess.svg";
 import profileIcon from "assets/profile.svg";
-import { FC, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { FC, FormEventHandler, useEffect, useMemo } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import NotiItem from "./NotiItem";
 import UserOptionItem from "./UserOptionItem";
 
@@ -22,6 +23,8 @@ const NavBar: FC = () => {
   const notifications = useAppSelector(selectNotificationData);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [urlSearchParams] = useSearchParams();
+  const serachParams = urlSearchParams.get("search");
   const items: ItemType[] = useMemo(
     () => [
       {
@@ -59,15 +62,34 @@ const NavBar: FC = () => {
     ],
     [dispatch, navigate, user],
   );
+  const submitSearchHandler: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const search = formData.get("search");
+    if (search) {
+      dispatch(clearFilter());
+      navigate(`/?search=${search}`);
+    } else {
+      navigate(`/`);
+    }
+    dispatch(filterUsers("filter"));
+  };
   useEffect(() => {
     dispatch(fetchNotification());
   }, [dispatch]);
   return (
-    <div className="flex flex-row items-center gap-3">
+    <form
+      onSubmit={submitSearchHandler}
+      className="flex flex-row items-center gap-3"
+    >
       <Input
         className="mr-2"
         placeholder="検索"
         suffix={<SearchOutlined />}
+        defaultValue={serachParams || ""}
+        allowClear
+        name="search"
+        type="search"
       />
       <Link
         className="grid place-items-center"
@@ -121,7 +143,7 @@ const NavBar: FC = () => {
           />
         </Dropdown>
       </span>
-    </div>
+    </form>
   );
 };
 export default NavBar;

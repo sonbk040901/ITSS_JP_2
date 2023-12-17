@@ -129,7 +129,7 @@ const Profile: FC = () => {
               </div>
             </div>
             <div className="self-center">
-              {userInfo?.isFriend ? (
+              {userInfo?.friendStatus === "none" ? (
                 <Button
                   type="primary"
                   className="font-bold"
@@ -137,13 +137,29 @@ const Profile: FC = () => {
                 >
                   友達になる
                 </Button>
-              ) : (
+              ) : userInfo?.friendStatus === "accepted" ? (
                 <Button
                   type="primary"
                   className="font-bold"
                   danger
                 >
                   友達を解除する
+                </Button>
+              ) : userInfo?.friendStatus === "pending" ? (
+                <Button
+                  type="primary"
+                  className="font-bold"
+                  disabled
+                >
+                  友達リクエストを送信しました
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  className="font-bold"
+                  onClick={success}
+                >
+                  友達リクエストが断れました
                 </Button>
               )}
             </div>

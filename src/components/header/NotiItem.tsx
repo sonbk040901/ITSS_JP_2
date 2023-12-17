@@ -1,7 +1,7 @@
+import { Button } from "antd";
+import avtIcon from "assets/avatar/a1.svg";
 import { FC } from "react";
 import { Notification } from "types";
-import avtIcon from "assets/avatar/a1.svg";
-import { Button } from "antd";
 
 interface NotiItemProps {
   notification: Notification;
@@ -34,7 +34,7 @@ const NotiItem: FC<NotiItemProps> = ({ notification }) => {
             shape="round"
             size="small"
           >
-            拒否
+            キャンセル
           </Button>
           <Button
             shape="round"
@@ -42,7 +42,7 @@ const NotiItem: FC<NotiItemProps> = ({ notification }) => {
             type="primary"
             className=""
           >
-            同意
+            アクセプト
           </Button>
         </div>
       )}

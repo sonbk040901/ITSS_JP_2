@@ -36,14 +36,22 @@ const initialState: FilterState = {
 };
 export const filterUsers = createAsyncThunk(
   "filter/filterUsers",
-  async (type: "filter" | Pick<Pagination, "currentPage">, thunkApi) => {
+  async (
+    type:
+      | "filter"
+      | Partial<Pick<Pagination, "currentPage"> & { search: string }>,
+    thunkApi,
+  ) => {
     const state = thunkApi.getState() as RootState;
     const { filter, pagination } = state.filter;
     const response = await userService.filterUsers(
       filter,
-      type !== "filter"
-        ? { ...pagination, currentPage: type.currentPage }
-        : { ...pagination, currentPage: 1 },
+      type === "filter"
+        ? { ...pagination, currentPage: 1 }
+        : type.search
+        ? { ...pagination, currentPage: 1 }
+        : { ...pagination, currentPage: type.currentPage || 1 },
+      type !== "filter" ? type.search : undefined,
     );
     return response;
   },
@@ -54,6 +62,9 @@ const filterSlice = createSlice({
   reducers: {
     setFilter(state, action: PayloadAction<Filter>) {
       state.filter = action.payload;
+    },
+    clearFilter(state) {
+      state.filter = initialState.filter;
     },
   },
   extraReducers: (builder) =>
@@ -69,7 +80,7 @@ const filterSlice = createSlice({
       })
       .addCase(filterUsers.rejected, (state) => {
         state.status = "error";
-      })
+      }),
 });
 export const selectFilter = (state: RootState) => state.filter;
 export const selectFilterStatus = createSelector(
@@ -88,5 +99,5 @@ export const selectFilterPagination = createSelector(
   selectFilter,
   (filter) => filter.pagination,
 );
-export const { setFilter } = filterSlice.actions;
+export const { setFilter, clearFilter } = filterSlice.actions;
 export default filterSlice.reducer;

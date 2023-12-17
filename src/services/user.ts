@@ -27,6 +27,7 @@ const userService = {
   filterUsers: async (
     filter: Filter,
     pagination?: Pagination,
+    search?: string,
   ): Promise<{ users: UserBasic[] } & Pagination> => {
     const token = storeService.get<string>("token");
     if (!token) {
@@ -49,6 +50,7 @@ const userService = {
           ? (pagination?.currentPage - 1) * pagination.pageSize
           : 0,
         ...filter,
+        search,
       },
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -73,13 +75,21 @@ const userService = {
       throw new Error("No token found");
     }
     const response = await axiosInstance.get<
-      Response<Omit<UserProfile, "isBookmarked"> & { bookmarked: "0" | "1" }>
+      Response<
+        Omit<UserProfile, "isBookmarked"> & {
+          bookmarked: "0" | "1";
+          friend_status: 1 | 2 | 3;
+        }
+      >
     >(`/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return {
       ...response.data.data,
       isBookmarked: response.data.data.bookmarked === "1",
+      friendStatus: (["none", "pending", "rejected", "accepted"] as const)[
+        response.data.data.friend_status || 0
+      ],
     };
   },
   bookmarkUser: async (id: number): Promise<void> => {

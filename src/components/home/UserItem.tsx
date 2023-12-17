@@ -35,7 +35,7 @@ const UserItem: FC<UserItemProps> = ({
       : matchingRate < 90
       ? "orange"
       : "green"
-    : "gray";
+    : "#ea00ff";
   return (
     <Card
       bordered
@@ -51,13 +51,17 @@ const UserItem: FC<UserItemProps> = ({
         src={flag}
         alt="ds"
       />
-      {matchingRate && (
+      {matchingRate !== null && (
         <div
+          title={`マッチング率 ${matchingRate}%`}
           className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white
-      grid place-items-center
-      shadow-sm border-[1px]"
+                      grid place-items-center
+                      shadow-sm border-[1px]"
         >
-          <span className={`text-xs text-[${matchingRateColor}]`}>
+          <span
+            className="text-xs"
+            style={{ color: matchingRateColor }}
+          >
             {matchingRate}%
           </span>
         </div>

@@ -14,7 +14,7 @@ export type _User = {
   filter?: `${number}`;
 };
 export type UserProfile = User & {
-  isFriend: boolean;
+  friendStatus: "pending" | "accepted" | "rejected" | "none";
   isBookmarked: boolean;
 };
 export type User = Nullable<

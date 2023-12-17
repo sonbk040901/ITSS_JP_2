@@ -10,6 +10,7 @@ const Profile = Loader(lazy(async () => import("pages/private/Profile")));
 const PersonalProfile = Loader(
   lazy(async () => import("pages/private/PersonalProfile")),
 );
+const Chat = Loader(lazy(async () => import("pages/private/Chat")));
 const Hello = Loader(lazy(async () => import("pages/auth/Hello")));
 const Notfound = Loader(lazy(async () => import("pages/Notfound")));
 
@@ -29,6 +30,10 @@ const Router = createBrowserRouter([
       {
         path: "profile",
         element: <PersonalProfile />,
+      },
+      {
+        path: "chat",
+        element: <Chat />,
       },
     ],
   },

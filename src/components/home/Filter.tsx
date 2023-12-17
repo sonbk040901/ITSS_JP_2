@@ -9,11 +9,13 @@ import { Button, Input, Popover, Select, Tooltip } from "antd";
 import { DefaultOptionType } from "antd/es/select";
 import filterIcon from "assets/filter.svg";
 import { ChangeEvent, FC, FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Filter: FC = () => {
   const [open, setOpen] = useState(false);
   const filter = useAppSelector(selectFilterValue);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const levelOptions: DefaultOptionType[] = [
     { label: "N1", value: 1 },
     { label: "N2", value: 2 },
@@ -47,6 +49,7 @@ const Filter: FC = () => {
   const handleSubmitFilter = (e: FormEvent) => {
     e.preventDefault();
     dispatch(filterUsers("filter"));
+    navigate("/");
     setOpen(false);
   };
   const handleCancelFilter = () => {
@@ -58,7 +61,6 @@ const Filter: FC = () => {
         province: null,
       }),
     );
-    setOpen(false);
   };
   return (
     <div className="self-end">
