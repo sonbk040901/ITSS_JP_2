@@ -104,7 +104,7 @@ const NavBar: FC = () => {
         title="通知"
         trigger={"click"}
         content={
-          <div className="w-52 pb-3">
+          <div className="w-52 h-40 pb-3 overflow-y-scroll">
             {notifications.map((notification) => (
               <NotiItem
                 key={notification.id}

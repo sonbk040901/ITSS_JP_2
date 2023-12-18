@@ -1,22 +1,26 @@
-import { Notification } from "types";
+import { storeService } from "@/utils";
+import { Notification, Response } from "types";
+import { axiosInstance } from "./axios";
 const notificationService = {
+  getAxiosInstance: async () => {
+    const token = storeService.get<string>("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    return axiosInstance;
+  },
   getAll: async (): Promise<Notification[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return [
-      { id: 1, senderId: 2, type: 1, time: "2023-11-20, 9:25:00" },
-      {
-        id: 2,
-        senderId: 3,
-        type: 2,
-        time: "2023-11-20, 9:25:00",
-      },
-      {
-        id: 3,
-        senderId: 4,
-        type: 3,
-        time: "2023-11-20, 9:25:00",
-      },
-    ];
+    const axiosInstance = await notificationService.getAxiosInstance();
+    const { data } = await axiosInstance.get<
+      Response<(Omit<Notification, "user"> & Notification["user"])[]>
+    >("/notifications");
+    return data.data.map(({ time, type, ...user }) => ({
+      id: user.id,
+      time,
+      type,
+      user,
+    }));
   },
 } satisfies Record<string, (...args: never[]) => Promise<unknown>>;
 export default notificationService;

@@ -19,6 +19,14 @@ export const fetchUserInfo = createAsyncThunk(
   "profile/fetchUserInfo",
   userService.getUserProfile,
 );
+export const addFriend = createAsyncThunk(
+  "profile/addFriend",
+  userService.addFriend,
+);
+export const cancelFriendRequest = createAsyncThunk(
+  "profile/cancelFriendRequest",
+  userService.cancelFriendRequest,
+);
 
 export const profileSlice = createSlice({
   name: "auth",
@@ -35,6 +43,12 @@ export const profileSlice = createSlice({
       })
       .addCase(fetchUserInfo.rejected, (state) => {
         state.status = "idle";
+      })
+      .addCase(addFriend.fulfilled, (state) => {
+        if (state.userInfo) state.userInfo.friendStatus = "pending";
+      })
+      .addCase(cancelFriendRequest.fulfilled, (state) => {
+        if (state.userInfo) state.userInfo.friendStatus = "none";
       }),
 });
 export const selectProfile = (state: RootState) => state.profile;

@@ -8,7 +8,7 @@ interface NotiItemProps {
 }
 
 const NotiItem: FC<NotiItemProps> = ({ notification }) => {
-  const { id, senderId, time, type } = notification;
+  const { user, time, type } = notification;
   const timeString = new Date(time).toLocaleString("ja-JP");
   const mess =
     type === 1
@@ -21,12 +21,15 @@ const NotiItem: FC<NotiItemProps> = ({ notification }) => {
       <div className="flex flex-row justify-between gap-2">
         <span>
           <img
-            src={avtIcon}
+            src={user.avatar ?? avtIcon}
             className="w-7 rounded-full shadow-sm border-[1px]"
             alt=""
           />
         </span>
-        <span className="font-semibold text-xs">Pham Huy Hoang{mess}</span>
+        <span className="font-semibold text-xs">
+          {user.name}
+          {mess}
+        </span>
       </div>
       {type === 1 && (
         <div className="flex justify-around">

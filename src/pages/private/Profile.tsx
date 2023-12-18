@@ -1,15 +1,22 @@
+import heartBlack from "@/assets/heart-black.svg";
+import heartRed from "@/assets/heart-red.svg";
 import { useAppDispatch, useAppSelector } from "@/states";
 import { selectAuthUserInfo } from "@/states/slices/auth";
-import { fetchUserInfo, selectProfileUserInfo } from "@/states/slices/profile";
+import {
+  addFriend,
+  cancelFriendRequest,
+  fetchUserInfo,
+  selectProfileStatus,
+  selectProfileUserInfo,
+} from "@/states/slices/profile";
 import { nationality } from "@/utils";
 import { getProvinceByValue } from "@/utils/province";
-import { Badge, Button, Image, message } from "antd";
+import { Badge, Button, Image, Popover } from "antd";
 import Card from "antd/es/card/Card";
+import Link from "antd/es/typography/Link";
 import avt from "assets/avatar/a1.svg";
 import back from "assets/back.svg";
 import jlpt from "assets/jlpt.svg";
-import heartBlack from "@/assets/heart-black.svg";
-import heartRed from "@/assets/heart-red.svg";
 import { FC, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -19,7 +26,7 @@ const Profile: FC = () => {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector(selectAuthUserInfo)?.id;
   const userInfo = useAppSelector(selectProfileUserInfo);
-  const [messageApi, contextHolder] = message.useMessage();
+  const profileStatus = useAppSelector(selectProfileStatus);
   useEffect(() => {
     if (id == currentUserId || !id) {
       navigate("/profile");
@@ -45,16 +52,11 @@ const Profile: FC = () => {
       </div>
     ));
   };
-  const success = () => {
-    messageApi
-      .open({
-        type: "loading",
-        content: "友達リクエストを送信しています",
-        duration: 1.5,
-      })
-      .then(() => message.success("応答するまで待ちなさい", 1.5));
-  };
+  const handleAddFriend = () => id && dispatch(addFriend(Number(id)));
+  const handleCancelFriend = () =>
+    id && dispatch(cancelFriendRequest(Number(id)));
 
+  if (profileStatus === "loading") return <div>loading...</div>;
   return (
     <div className="flex flex-col h-full max-w-[80%] w-[1000px]">
       <div
@@ -71,7 +73,6 @@ const Profile: FC = () => {
       </div>
       <div className="flex flex-row justify-between items-start py-2 gap-10 overflow-scroll">
         <Card className="shadow-md w-[300px] bg-[#EFF6FC] border-[#5591EB]">
-          {contextHolder}
           <div className="flex flex-col">
             <Badge
               offset={[10, 70]}
@@ -133,7 +134,7 @@ const Profile: FC = () => {
                 <Button
                   type="primary"
                   className="font-bold"
-                  onClick={success}
+                  onClick={handleAddFriend}
                 >
                   友達になる
                 </Button>
@@ -143,23 +144,28 @@ const Profile: FC = () => {
                   className="font-bold"
                   danger
                 >
-                  友達を解除する
+                  友達になった
                 </Button>
               ) : userInfo?.friendStatus === "pending" ? (
+                <Popover
+                  trigger="contextMenu"
+                  content={<Link onClick={handleCancelFriend}>キャンセル</Link>}
+                >
+                  <Button
+                    type="primary"
+                    className="font-bold"
+                    disabled
+                  >
+                    未処理
+                  </Button>
+                </Popover>
+              ) : (
                 <Button
                   type="primary"
                   className="font-bold"
                   disabled
                 >
-                  友達リクエストを送信しました
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  className="font-bold"
-                  onClick={success}
-                >
-                  友達リクエストが断れました
+                  拒否された
                 </Button>
               )}
             </div>

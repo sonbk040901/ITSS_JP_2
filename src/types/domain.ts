@@ -33,7 +33,11 @@ export type Message = {
  */
 export type Notification = {
   id: number;
-  senderId: number;
+  user: {
+    id: number;
+    name: string;
+    avatar: string;
+  };
   type: Range<1, 4>[number];
   time: string;
 };

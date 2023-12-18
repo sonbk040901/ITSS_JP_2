@@ -4,14 +4,17 @@ import { axiosInstance } from "./axios";
 import { Filter } from "@/states/slices/filter";
 import { UserProfile } from "@/types/domain";
 const userService = {
-  auth: async (): Promise<User> => {
+  getAxiosInstance: async () => {
     const token = storeService.get<string>("token");
     if (!token) {
       throw new Error("No token found");
     }
-    const response = await axiosInstance.get<User>("/auth/profile", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    return axiosInstance;
+  },
+  auth: async (): Promise<User> => {
+    const axiosInstance = await userService.getAxiosInstance();
+    const response = await axiosInstance.get<User>("/auth/profile");
     return response.data;
   },
   login: async (form: {
@@ -29,10 +32,7 @@ const userService = {
     pagination?: Pagination,
     search?: string,
   ): Promise<{ users: UserBasic[] } & Pagination> => {
-    const token = storeService.get<string>("token");
-    if (!token) {
-      throw new Error("No token found");
-    }
+    const axiosInstance = await userService.getAxiosInstance();
     const response = await axiosInstance.get<
       Response<RawFilterUser[]> & {
         meta: {
@@ -52,7 +52,6 @@ const userService = {
         ...filter,
         search,
       },
-      headers: { Authorization: `Bearer ${token}` },
     });
     const data = response.data;
     const users = data.data.map((u): UserBasic => {
@@ -70,10 +69,7 @@ const userService = {
     };
   },
   getUserProfile: async (id: string): Promise<UserProfile> => {
-    const token = storeService.get<string>("token");
-    if (!token) {
-      throw new Error("No token found");
-    }
+    const axiosInstance = await userService.getAxiosInstance();
     const response = await axiosInstance.get<
       Response<
         Omit<UserProfile, "isBookmarked"> & {
@@ -81,9 +77,7 @@ const userService = {
           friend_status: 1 | 2 | 3;
         }
       >
-    >(`/users/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    >(`/users/${id}`);
     return {
       ...response.data.data,
       isBookmarked: response.data.data.bookmarked === "1",
@@ -93,20 +87,16 @@ const userService = {
     };
   },
   bookmarkUser: async (id: number): Promise<void> => {
-    const token = storeService.get<string>("token");
-    if (!token) {
-      throw new Error("No token found");
-    }
-    await axiosInstance.post(
-      `/bookmarks`,
-      {
-        receiver_id: id,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    const axiosInstance = await userService.getAxiosInstance();
+    await axiosInstance.post("/bookmarks", { receiver_id: id });
+  },
+  addFriend: async (id: number) => {
+    const axiosInstance = await userService.getAxiosInstance();
+    await axiosInstance.post(`/users/${id}/friends`);
+  },
+  cancelFriendRequest: async (id: number) => {
+    const axiosInstance = await userService.getAxiosInstance();
+    await axiosInstance.delete(`/users/${id}/friends`);
   },
 };
-
 export default userService;
