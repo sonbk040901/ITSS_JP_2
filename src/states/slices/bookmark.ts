@@ -13,10 +13,10 @@ const initialState: BookmardState = {
   status: "idle",
   id: null,
 };
-export const togleBookmard = createAsyncThunk(
-  "bookmark/togleBookmard",
-  async (id: number) => {
-    await userService.bookmarkUser(id);
+export const toggleBookmard = createAsyncThunk(
+  "bookmark/toggleBookmard",
+  async ({ id, bookmark }: { id: number; bookmark: boolean }) => {
+    await userService.bookmarkUser(id, bookmark);
     return id;
   },
 );
@@ -31,14 +31,14 @@ const bookmarkSlice = createSlice({
   },
   extraReducers: (builder) =>
     builder
-      .addCase(togleBookmard.pending, (state, action) => {
+      .addCase(toggleBookmard.pending, (state, action) => {
         state.status = "loading";
-        state.id = action.meta.arg;
+        state.id = action.meta.arg.id;
       })
-      .addCase(togleBookmard.fulfilled, (state) => {
+      .addCase(toggleBookmard.fulfilled, (state) => {
         state.status = "success";
       })
-      .addCase(togleBookmard.rejected, (state) => {
+      .addCase(toggleBookmard.rejected, (state) => {
         state.status = "error";
       }),
 });

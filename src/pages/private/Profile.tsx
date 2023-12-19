@@ -3,10 +3,16 @@ import heartRed from "@/assets/heart-red.svg";
 import { useAppDispatch, useAppSelector } from "@/states";
 import { selectAuthUserInfo } from "@/states/slices/auth";
 import {
+  resetBookmark,
+  selectBookmarkId,
+  selectBookmarkStatus,
+  toggleBookmard,
+} from "@/states/slices/bookmark";
+import {
   addFriend,
   cancelFriendRequest,
   fetchUserInfo,
-  selectProfileStatus,
+  // selectProfileStatus,
   selectProfileUserInfo,
 } from "@/states/slices/profile";
 import { nationality } from "@/utils";
@@ -26,12 +32,20 @@ const Profile: FC = () => {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector(selectAuthUserInfo)?.id;
   const userInfo = useAppSelector(selectProfileUserInfo);
-  const profileStatus = useAppSelector(selectProfileStatus);
+  // const profileStatus = useAppSelector(selectProfileStatus);
+  const bookmarkStatus = useAppSelector(selectBookmarkStatus);
+  const bookMarkId = useAppSelector(selectBookmarkId);
   useEffect(() => {
     if (id == currentUserId || !id) {
       navigate("/profile");
     } else dispatch(fetchUserInfo(id));
   }, [currentUserId, dispatch, id, navigate]);
+  useEffect(() => {
+    if (bookmarkStatus === "success" && bookMarkId === userInfo?.id) {
+      id && dispatch(fetchUserInfo(id));
+      dispatch(resetBookmark());
+    }
+  }, [bookMarkId, bookmarkStatus, dispatch, id, userInfo?.id]);
   const renderInfo = () => {
     const info = [
       { label: "電話番号", value: userInfo?.phone },
@@ -55,8 +69,12 @@ const Profile: FC = () => {
   const handleAddFriend = () => id && dispatch(addFriend(Number(id)));
   const handleCancelFriend = () =>
     id && dispatch(cancelFriendRequest(Number(id)));
-
-  if (profileStatus === "loading") return <div>loading...</div>;
+  const handleBookmark = () => {
+    userInfo?.id &&
+      dispatch(
+        toggleBookmard({ id: userInfo.id, bookmark: !userInfo.isBookmarked }),
+      );
+  };
   return (
     <div className="flex flex-col h-full max-w-[80%] w-[1000px]">
       <div
@@ -78,8 +96,9 @@ const Profile: FC = () => {
               offset={[10, 70]}
               count={
                 <img
-                  className="h-6 aspect-auto"
+                  className="h-6 aspect-auto cursor-pointer"
                   src={userInfo?.isBookmarked ? heartRed : heartBlack}
+                  onClick={handleBookmark}
                 />
               }
               className="h-20 w-20 grid self-center"

@@ -1,3 +1,5 @@
+import { useAppDispatch } from "@/states";
+import { acceptAddFriend, rejectAddFriend } from "@/states/slices/notification";
 import { Button } from "antd";
 import avtIcon from "assets/avatar/a1.svg";
 import { FC } from "react";
@@ -10,12 +12,18 @@ interface NotiItemProps {
 const NotiItem: FC<NotiItemProps> = ({ notification }) => {
   const { user, time, type } = notification;
   const timeString = new Date(time).toLocaleString("ja-JP");
-  const mess =
-    type === 1
-      ? "友達リクエストを送信しました。"
-      : type === 2
-      ? "は友達リクエストに同意しました。"
-      : "は友達リクエストを拒否しました。";
+  const mess = (i: typeof type) =>
+    [
+      "友達リクエストを送信しました。",
+      "は友達リクエストを拒否しました。",
+      "は友達リクエストに同意しました。",
+    ][i - 1];
+  const dispatch = useAppDispatch();
+  const handleChangeFriendStatus = (type: "accept" | "reject") => {
+    const action = type === "accept" ? acceptAddFriend : rejectAddFriend;
+    dispatch(action(user.id));
+  };
+
   return (
     <div className="border-b-[1px] w-full flex flex-col items-stretch gap-[1px] pt-1">
       <div className="flex flex-row justify-between gap-2">
@@ -28,7 +36,7 @@ const NotiItem: FC<NotiItemProps> = ({ notification }) => {
         </span>
         <span className="font-semibold text-xs">
           {user.name}
-          {mess}
+          {mess(type)}
         </span>
       </div>
       {type === 1 && (
@@ -36,6 +44,7 @@ const NotiItem: FC<NotiItemProps> = ({ notification }) => {
           <Button
             shape="round"
             size="small"
+            onClick={() => handleChangeFriendStatus("reject")}
           >
             キャンセル
           </Button>
@@ -44,6 +53,7 @@ const NotiItem: FC<NotiItemProps> = ({ notification }) => {
             size="small"
             type="primary"
             className=""
+            onClick={() => handleChangeFriendStatus("accept")}
           >
             アクセプト
           </Button>

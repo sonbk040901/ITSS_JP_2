@@ -75,7 +75,12 @@ const NavBar: FC = () => {
     dispatch(filterUsers("filter"));
   };
   useEffect(() => {
-    dispatch(fetchNotification());
+    const sti = setInterval(() => {
+      dispatch(fetchNotification());
+    }, 1000);
+    return () => {
+      clearInterval(sti);
+    };
   }, [dispatch]);
   return (
     <form
@@ -104,7 +109,7 @@ const NavBar: FC = () => {
         title="通知"
         trigger={"click"}
         content={
-          <div className="w-52 h-40 pb-3 overflow-y-scroll">
+          <div className="w-52 max-h-48 pb-3 overflow-y-scroll">
             {notifications.map((notification) => (
               <NotiItem
                 key={notification.id}

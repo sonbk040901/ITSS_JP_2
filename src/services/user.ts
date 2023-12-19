@@ -1,19 +1,11 @@
 import { Pagination, User, UserBasic, Response, RawFilterUser } from "types";
 import { storeService } from "utils";
-import { axiosInstance } from "./axios";
+import { getAxiosInstance, axiosInstance } from "./axios";
 import { Filter } from "@/states/slices/filter";
 import { UserProfile } from "@/types/domain";
 const userService = {
-  getAxiosInstance: async () => {
-    const token = storeService.get<string>("token");
-    if (!token) {
-      throw new Error("No token found");
-    }
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    return axiosInstance;
-  },
   auth: async (): Promise<User> => {
-    const axiosInstance = await userService.getAxiosInstance();
+    const axiosInstance = await getAxiosInstance();
     const response = await axiosInstance.get<User>("/auth/profile");
     return response.data;
   },
@@ -32,7 +24,7 @@ const userService = {
     pagination?: Pagination,
     search?: string,
   ): Promise<{ users: UserBasic[] } & Pagination> => {
-    const axiosInstance = await userService.getAxiosInstance();
+    const axiosInstance = await getAxiosInstance();
     const response = await axiosInstance.get<
       Response<RawFilterUser[]> & {
         meta: {
@@ -69,7 +61,7 @@ const userService = {
     };
   },
   getUserProfile: async (id: string): Promise<UserProfile> => {
-    const axiosInstance = await userService.getAxiosInstance();
+    const axiosInstance = await getAxiosInstance();
     const response = await axiosInstance.get<
       Response<
         Omit<UserProfile, "isBookmarked"> & {
@@ -86,17 +78,9 @@ const userService = {
       ],
     };
   },
-  bookmarkUser: async (id: number): Promise<void> => {
-    const axiosInstance = await userService.getAxiosInstance();
-    await axiosInstance.post("/bookmarks", { receiver_id: id });
-  },
-  addFriend: async (id: number) => {
-    const axiosInstance = await userService.getAxiosInstance();
-    await axiosInstance.post(`/users/${id}/friends`);
-  },
-  cancelFriendRequest: async (id: number) => {
-    const axiosInstance = await userService.getAxiosInstance();
-    await axiosInstance.delete(`/users/${id}/friends`);
+  bookmarkUser: async (id: number, bookmark: boolean): Promise<void> => {
+    const axiosInstance = await getAxiosInstance();
+    await axiosInstance[bookmark ? "post" : "delete"](`/users/${id}/bookmarks`);
   },
 };
 export default userService;

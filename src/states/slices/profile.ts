@@ -6,6 +6,7 @@ import {
 import { userService } from "services";
 import { UserProfile } from "types/domain";
 import { RootState } from "..";
+import friendService from "@/services/friend";
 
 interface ProfileState {
   status: "loading" | "idle" | "modify";
@@ -21,11 +22,11 @@ export const fetchUserInfo = createAsyncThunk(
 );
 export const addFriend = createAsyncThunk(
   "profile/addFriend",
-  userService.addFriend,
+  friendService.addFriend,
 );
 export const cancelFriendRequest = createAsyncThunk(
   "profile/cancelFriendRequest",
-  userService.cancelFriendRequest,
+  friendService.cancelFriendRequest,
 );
 
 export const profileSlice = createSlice({
