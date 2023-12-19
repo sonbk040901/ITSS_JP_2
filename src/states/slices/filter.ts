@@ -66,6 +66,21 @@ const filterSlice = createSlice({
     clearFilter(state) {
       state.filter = initialState.filter;
     },
+    updateUserInfo(
+      state,
+      action: PayloadAction<{ id: number; user: Partial<UserBasic> }>,
+    ) {
+      const index = state.results.findIndex(
+        (user) => user.id === action.payload.id,
+      );
+      if (index !== -1) {
+        state.results[index] = {
+          ...state.results[index],
+          ...action.payload.user,
+        };
+        state.results = [...state.results];
+      }
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -99,5 +114,5 @@ export const selectFilterPagination = createSelector(
   selectFilter,
   (filter) => filter.pagination,
 );
-export const { setFilter, clearFilter } = filterSlice.actions;
+export const { setFilter, clearFilter, updateUserInfo } = filterSlice.actions;
 export default filterSlice.reducer;

@@ -8,6 +8,7 @@ import {
   selectBookmarkStatus,
   toggleBookmard,
 } from "@/states/slices/bookmark";
+import { updateUserInfo } from "@/states/slices/filter";
 import {
   addFriend,
   cancelFriendRequest,
@@ -42,10 +43,23 @@ const Profile: FC = () => {
   }, [currentUserId, dispatch, id, navigate]);
   useEffect(() => {
     if (bookmarkStatus === "success" && bookMarkId === userInfo?.id) {
+      dispatch(
+        updateUserInfo({
+          id: userInfo.id,
+          user: { isBookmarked: !userInfo.isBookmarked },
+        }),
+      );
       id && dispatch(fetchUserInfo(id));
       dispatch(resetBookmark());
     }
-  }, [bookMarkId, bookmarkStatus, dispatch, id, userInfo?.id]);
+  }, [
+    bookMarkId,
+    bookmarkStatus,
+    dispatch,
+    id,
+    userInfo?.id,
+    userInfo?.isBookmarked,
+  ]);
   const renderInfo = () => {
     const info = [
       { label: "電話番号", value: userInfo?.phone },
