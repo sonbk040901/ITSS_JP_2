@@ -49,7 +49,7 @@ const userService = {
     const users = data.data.map((u): UserBasic => {
       return {
         ...u,
-        isBookmarked: u.bookmarked === "1",
+        isBookmarked: u.bookmarked == "1",
         numberOfBookmarks: Number(u.bookmark_count),
       };
     });
@@ -72,7 +72,7 @@ const userService = {
     >(`/users/${id}`);
     return {
       ...response.data.data,
-      isBookmarked: response.data.data.bookmarked === "1",
+      isBookmarked: response.data.data.bookmarked == "1",
       friendStatus: (["none", "pending", "rejected", "accepted"] as const)[
         response.data.data.friend_status || 0
       ],
