@@ -18,8 +18,9 @@ import {
 } from "@/states/slices/profile";
 import { nationality } from "@/utils";
 import { getProvinceByValue } from "@/utils/province";
-import { Badge, Button, Image, Popover } from "antd";
+import { Badge, Button, ConfigProvider, Image, Popover } from "antd";
 import Card from "antd/es/card/Card";
+import useMessage from "antd/es/message/useMessage";
 import Link from "antd/es/typography/Link";
 import avt from "assets/avatar/a1.svg";
 import back from "assets/back.svg";
@@ -36,6 +37,7 @@ const Profile: FC = () => {
   // const profileStatus = useAppSelector(selectProfileStatus);
   const bookmarkStatus = useAppSelector(selectBookmarkStatus);
   const bookMarkId = useAppSelector(selectBookmarkId);
+  const [messApi, messContextHolder] = useMessage();
   useEffect(() => {
     if (id == currentUserId || !id) {
       navigate("/profile");
@@ -43,6 +45,12 @@ const Profile: FC = () => {
   }, [currentUserId, dispatch, id, navigate]);
   useEffect(() => {
     if (bookmarkStatus === "success" && bookMarkId === userInfo?.id) {
+      messApi.success({
+        content: userInfo?.isBookmarked
+          ? "ブックマークされました"
+          : "ブックマークを解除しました",
+        duration: 2,
+      });
       dispatch(
         updateUserInfo({
           id: userInfo.id,
@@ -50,6 +58,14 @@ const Profile: FC = () => {
         }),
       );
       id && dispatch(fetchUserInfo(id));
+      dispatch(resetBookmark());
+      return;
+    }
+    if (bookmarkStatus === "error") {
+      messApi.error({
+        content: "ブックマークに失敗しました",
+        duration: 2,
+      });
       dispatch(resetBookmark());
     }
   }, [
@@ -59,6 +75,7 @@ const Profile: FC = () => {
     id,
     userInfo?.id,
     userInfo?.isBookmarked,
+    messApi,
   ]);
   const renderInfo = () => {
     const info = [
@@ -91,6 +108,7 @@ const Profile: FC = () => {
   };
   return (
     <div className="flex flex-col h-full max-w-[80%] w-[1000px]">
+      {messContextHolder}
       <div
         className="inline-flex flex-row items-center h-16 gap-2 cursor-pointer"
         onClick={() => {
@@ -172,13 +190,24 @@ const Profile: FC = () => {
                   友達になる
                 </Button>
               ) : userInfo?.friendStatus === "accepted" ? (
-                <Button
-                  type="primary"
-                  className="font-bold"
-                  danger
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Button: {
+                        colorPrimary: "#F24E1E",
+                        algorithm: true,
+                      },
+                    },
+                  }}
                 >
-                  友達になった
-                </Button>
+                  <Button
+                    type="primary"
+                    className="font-bold"
+                    // danger
+                  >
+                    友達になった
+                  </Button>
+                </ConfigProvider>
               ) : userInfo?.friendStatus === "pending" ? (
                 <Popover
                   trigger="contextMenu"
@@ -193,13 +222,25 @@ const Profile: FC = () => {
                   </Button>
                 </Popover>
               ) : (
-                <Button
-                  type="primary"
-                  className="font-bold"
-                  disabled
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Button: {
+                        colorBgContainerDisabled: "#A4A4AC",
+                        colorTextDisabled: "#fff",
+                        algorithm: true,
+                      },
+                    },
+                  }}
                 >
-                  拒否された
-                </Button>
+                  <Button
+                    type="primary"
+                    className="font-bold"
+                    disabled
+                  >
+                    拒否された
+                  </Button>
+                </ConfigProvider>
               )}
             </div>
           </div>

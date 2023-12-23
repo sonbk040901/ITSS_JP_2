@@ -6,7 +6,6 @@ import { UserItem } from ".";
 interface UserListProps {}
 
 const UserList: FC<UserListProps> = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterState = useAppSelector(selectFilterStatus);
   const result = useAppSelector(selectFilterResults);
   return (

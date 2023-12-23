@@ -1,11 +1,10 @@
 import { Header as DefaultHeader } from "antd/es/layout/layout";
 import { FC } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppSelector } from "states";
 import { selectAuthStatus } from "states/slices/auth";
-import logo from "/logo.png";
 import NavBar from "../header/NavBar";
+import logo from "/logo.png";
 
 interface HeaderProps {}
 
