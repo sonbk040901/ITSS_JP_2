@@ -48,8 +48,8 @@ const Filter: FC = () => {
   };
   const handleSubmitFilter = (e: FormEvent) => {
     e.preventDefault();
-    dispatch(filterUsers("filter"));
     navigate("/");
+    dispatch(filterUsers("filter"));
     setOpen(false);
   };
   const handleCancelFilter = () => {

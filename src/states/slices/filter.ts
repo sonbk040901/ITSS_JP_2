@@ -42,16 +42,16 @@ export const filterUsers = createAsyncThunk(
       | Partial<Pick<Pagination, "currentPage"> & { search: string }>,
     thunkApi,
   ) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const search = urlParams.get("search");
     const state = thunkApi.getState() as RootState;
     const { filter, pagination } = state.filter;
     const response = await userService.filterUsers(
       filter,
       type === "filter"
         ? { ...pagination, currentPage: 1 }
-        : type.search
-        ? { ...pagination, currentPage: 1 }
         : { ...pagination, currentPage: type.currentPage || 1 },
-      type !== "filter" ? type.search : undefined,
+        search ?? undefined,
     );
     return response;
   },
