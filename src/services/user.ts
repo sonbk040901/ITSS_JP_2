@@ -2,7 +2,7 @@ import { Pagination, User, UserBasic, Response, RawFilterUser } from "types";
 import { storeService } from "utils";
 import { getAxiosInstance, axiosInstance } from "./axios";
 import { Filter } from "@/states/slices/filter";
-import { UserProfile } from "@/types/domain";
+import { FriendLatestChat, Message, UserProfile } from "@/types/domain";
 const userService = {
   auth: async (): Promise<User> => {
     const axiosInstance = await getAxiosInstance();
@@ -81,6 +81,96 @@ const userService = {
   bookmarkUser: async (id: number, bookmark: boolean): Promise<void> => {
     const axiosInstance = await getAxiosInstance();
     await axiosInstance[bookmark ? "post" : "delete"](`/users/${id}/bookmarks`);
+  },
+  getLatestChats: async (): Promise<FriendLatestChat[]> => {
+    const axiosInstance = await getAxiosInstance();
+    const response = await axiosInstance.get<
+      Response<
+        {
+          id: number;
+          name: string;
+          avatar: string;
+          friend_updated_at: string;
+          last_message: null | {
+            id: number;
+            sender_id: number;
+            receiver_id: number;
+            content: string;
+            created_at: string;
+          };
+        }[]
+      >
+    >("/users/friends");
+    return response.data.data
+      .map((c) => ({
+        ...c,
+        latestMessage: c.last_message
+          ? {
+              ...c.last_message,
+              senderId: c.last_message.sender_id,
+              receiverId: c.last_message.receiver_id,
+              createdAt: c.last_message.created_at,
+            }
+          : undefined,
+      }))
+      .sort((a, b) => {
+        if (!a.latestMessage) {
+          return 1;
+        }
+        if (!b.latestMessage) {
+          return -1;
+        }
+        return (
+          new Date(b.latestMessage.createdAt).getTime() -
+          new Date(a.latestMessage.createdAt).getTime()
+        );
+      });
+  },
+  getChat: async (id: number): Promise<Message[]> => {
+    const axiosInstance = await getAxiosInstance();
+    const response = await axiosInstance.get<
+      Response<
+        {
+          id: number;
+          sender_id: number;
+          receiver_id: number;
+          content: string;
+          created_at: string;
+        }[]
+      >
+    >(`/users/${id}/chats`);
+    return response.data.data.map(
+      ({ receiver_id, sender_id, created_at, ...m }) => ({
+        ...m,
+        senderId: sender_id,
+        receiverId: receiver_id,
+        createdAt: created_at,
+      }),
+    );
+  },
+  sendMessage: async ({
+    id,
+    content,
+  }: {
+    id: number;
+    content: string;
+  }): Promise<Message> => {
+    const axiosInstance = await getAxiosInstance();
+    const res = await axiosInstance.post<{
+      data: {
+        id: number;
+        sender_id: number;
+        receiver_id: number;
+        content: string;
+        created_at: string;
+      };
+    }>(`/users/${id}/chats`, { content });
+    return {
+      ...res.data.data,
+      senderId: res.data.data.sender_id,
+      receiverId: res.data.data.receiver_id,
+      createdAt: res.data.data.created_at,
+    };
   },
 };
 export default userService;

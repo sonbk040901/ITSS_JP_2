@@ -52,4 +52,8 @@ export const selectAuthUserInfo = createSelector(
   selectAuth,
   (auth) => auth.userInfo,
 );
+export const selectAuthUserId = createSelector(
+  selectAuthUserInfo,
+  (userInfo) => userInfo?.id,
+);
 export default authSlice.reducer;

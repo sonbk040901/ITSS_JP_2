@@ -30,7 +30,7 @@ export const cancelFriendRequest = createAsyncThunk(
 );
 
 export const profileSlice = createSlice({
-  name: "auth",
+  name: "profile",
   initialState,
   reducers: {},
   extraReducers: (builder) =>

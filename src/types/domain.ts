@@ -28,6 +28,12 @@ export type Message = {
   content: string;
   createdAt: string;
 };
+export type FriendLatestChat = {
+  id: number;
+  name: string;
+  avatar: string;
+  latestMessage?: Message | null;
+};
 /**
   type: 1: friend request, 2: add friend req has been accepted, 3: add friend req has been rejected
  */

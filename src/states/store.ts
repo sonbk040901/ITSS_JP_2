@@ -5,6 +5,7 @@ import authForm from "./slices/authForm";
 import profile from "./slices/profile";
 import bookmark from "./slices/bookmark";
 import notification from "./slices/notification";
+import chat from "./slices/chat";
 const store = configureStore({
   reducer: {
     auth,
@@ -13,6 +14,7 @@ const store = configureStore({
     profile,
     bookmark,
     notification,
+    chat
   },
 });
 export type RootState = ReturnType<typeof store.getState>;
