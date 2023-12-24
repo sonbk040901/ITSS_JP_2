@@ -1,9 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/states";
 import { selectAuthUserId } from "@/states/slices/auth";
 import {
-  resetChatSelectedFriendMessagesStatus,
   selectChatSelectedFriendMessages,
-  selectChatSelectedFriendMessagesStatus,
+  selectChatSelectedFriendMessagesStatus
 } from "@/states/slices/chat";
 import { Spin } from "antd";
 import { useEffect, useRef, type FC } from "react";
