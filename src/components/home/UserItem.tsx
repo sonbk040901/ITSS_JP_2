@@ -22,9 +22,10 @@ const UserItem: FC<UserItemProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
-  const age = birthday
-    ? new Date().getFullYear() - new Date(birthday).getFullYear()
-    : "N/A";
+  const ageRaw =
+    (new Date().getTime() - new Date(birthday).getTime()) /
+    (1000 * 60 * 60 * 24 * 365);
+  const age = birthday ? Math.round(Math.floor(ageRaw*2)/2) : "N/A";
   const flag = nationality.nationality.find(
     (item) => item.value === nationalityProp || item.value === "OTHER",
   )?.flag;
