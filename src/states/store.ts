@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import auth from "./slices/auth";
-import filter from "./slices/filter";
 import authForm from "./slices/authForm";
-import profile from "./slices/profile";
 import bookmark from "./slices/bookmark";
-import notification from "./slices/notification";
 import chat from "./slices/chat";
+import filter from "./slices/filter";
+import notification from "./slices/notification";
+import personalProfile from "./slices/personalProfile";
+import profile from "./slices/profile";
 const store = configureStore({
   reducer: {
     auth,
@@ -14,7 +15,8 @@ const store = configureStore({
     profile,
     bookmark,
     notification,
-    chat
+    chat,
+    personalProfile,
   },
 });
 export type RootState = ReturnType<typeof store.getState>;

@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/states";
 import { selectAuthUserId } from "@/states/slices/auth";
 import {
   selectChatSelectedFriendMessages,
-  selectChatSelectedFriendMessagesStatus
+  selectChatSelectedFriendMessagesStatus,
 } from "@/states/slices/chat";
 import { Spin } from "antd";
 import { useEffect, useRef, type FC } from "react";
@@ -22,9 +22,9 @@ const ChatBody: FC<ChatBodyProps> = () => {
     ref.current?.scrollTo({
       behavior: "smooth",
       top: ref.current.scrollHeight,
-    }); 
+    });
   }, [dispatch, status]);
-  if (status === "idle") {
+  if (status === "loading") {
     return (
       <div className="flex-1 grid place-items-center">
         <Spin size="large" />

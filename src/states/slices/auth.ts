@@ -9,18 +9,24 @@ import { RootState } from "..";
 
 interface AuthState {
   status: "loading" | "success" | "error";
+  updateStatus: "idle" | "loading" | "success" | "error";
   userInfo: null | User; // for user object
   userToken: null | string; // for storing the JWT
   error: null | object;
 }
 const initialState: AuthState = {
   status: "loading",
+  updateStatus: "idle",
   userInfo: null, // for user object
   userToken: null, // for storing the JWT
   error: null,
 };
 export const fetchUser = createAsyncThunk("auth/fetchUser", userService.auth);
 export const logout = createAsyncThunk("auth/logout", userService.logout);
+export const updateUserInfo = createAsyncThunk(
+  "auth/updateUserInfo",
+  userService.updateUserInfo,
+);
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -41,6 +47,16 @@ export const authSlice = createSlice({
       .addCase(logout.pending, (state) => {
         state.status = "error";
         state.userInfo = null;
+      })
+      .addCase(updateUserInfo.pending, (state) => {
+        state.updateStatus = "loading";
+      })
+      .addCase(updateUserInfo.fulfilled, (state) => {
+        state.updateStatus = "success";
+      })
+      .addCase(updateUserInfo.rejected, (state, action) => {
+        state.updateStatus = "error";
+        state.error = action.error;
       }),
 });
 export const selectAuth = (state: RootState) => state.auth;
@@ -55,5 +71,9 @@ export const selectAuthUserInfo = createSelector(
 export const selectAuthUserId = createSelector(
   selectAuthUserInfo,
   (userInfo) => userInfo?.id,
+);
+export const selectAuthUpdateStatus = createSelector(
+  selectAuth,
+  (auth) => auth.updateStatus,
 );
 export default authSlice.reducer;

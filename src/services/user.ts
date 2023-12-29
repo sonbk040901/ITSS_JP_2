@@ -172,5 +172,16 @@ const userService = {
       createdAt: res.data.data.created_at,
     };
   },
+  updateUserInfo: async (form: FormData): Promise<User> => {
+    const axiosInstance = await getAxiosInstance();
+    const data: Record<string, unknown> = {};
+    form.forEach((value, key) => {
+      data[key] = value;
+      if (key === "level" || key === "province") data[key] = Number(value);
+    });
+    const response = await axiosInstance.patch<User>("/users/me", data);
+    console.log(response.data);
+    return response.data;
+  },
 };
 export default userService;

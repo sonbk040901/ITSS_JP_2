@@ -63,7 +63,6 @@ export const chatSlice = createSlice({
         state.selectedFriendMessagesStatus = "success";
         if (action.payload.length !== state.selectedFriendMessages.length) {
           state.selectedFriendMessages = action.payload;
-          console.log("action.payload", action.payload);
         }
       })
       .addCase(selectChatFriend.rejected, (state) => {

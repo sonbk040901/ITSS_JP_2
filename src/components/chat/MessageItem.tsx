@@ -14,7 +14,10 @@ const MessageItem: FC<MessageItemProps> = (props) => {
   const { content, isMe, createdAt } = props;
   return (
     <div className={`flex flex-col gap-1 ${isMe ? "items-end" : "items-start"}`}>
-      <div className="bg-[#6E00FF] text-white font-medium text-lg py-1 px-3 rounded-lg">
+      <div className="font-medium text-lg py-1 px-3 rounded-lg" style={{
+        backgroundColor: isMe ? "#6E00FF" : "#E7E7E7",
+        color: isMe ? "#fff" : "#000"
+      }}>
         {content}
       </div>
       <span className="text-xs text-slate-400">

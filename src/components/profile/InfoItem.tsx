@@ -10,14 +10,17 @@ import {
   Upload,
   UploadProps,
 } from "antd";
-import { FC, useId } from "react";
+import { FC, useId, useRef } from "react";
 
 type InfoItemInputProps = Omit<InputProps, "type"> & {
   type?: "text" | "number" | "password";
 };
 type InfoItemUploadProps = Omit<UploadProps, "type"> & { type: "file" };
 type InfoItemDateProps = DatePickerProps & { type: "date" };
-type InfoItemSelectProps = Omit<SelectProps, "type"> & { type: "select" };
+type InfoItemSelectProps = Omit<SelectProps, "type"> & {
+  type: "select";
+  name?: string;
+};
 type InfoItemProps = (
   | InfoItemInputProps
   | InfoItemUploadProps
@@ -26,6 +29,7 @@ type InfoItemProps = (
 ) & { label: string; viewOnly?: boolean };
 const InfoItem: FC<InfoItemProps> = ({ label, viewOnly = true, ...props }) => {
   const id = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div className="flex flex-col justify-around">
       <label
@@ -53,10 +57,21 @@ const InfoItem: FC<InfoItemProps> = ({ label, viewOnly = true, ...props }) => {
           disabled={viewOnly}
         />
       ) : props.type === "select" ? (
-        <Select
-          {...props}
-          disabled={viewOnly}
-        />
+        <>
+          <Select
+            {...props}
+            disabled={viewOnly}
+            onChange={(value) => {
+              if (inputRef.current) inputRef.current.value = value as string;
+            }}
+          />
+          <input
+            ref={inputRef}
+            name={props.name}
+            defaultValue={props.defaultValue}
+            type="hidden"
+          />
+        </>
       ) : (
         <Input
           id={id}
