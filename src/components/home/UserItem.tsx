@@ -25,11 +25,12 @@ const UserItem: FC<UserItemProps> = ({
   const ageRaw =
     (new Date().getTime() - new Date(birthday).getTime()) /
     (1000 * 60 * 60 * 24 * 365);
-  const age = birthday ? Math.round(Math.floor(ageRaw*2)/2) : "N/A";
+  const age = birthday ? Math.round(Math.floor(ageRaw * 2) / 2) : "N/A";
   const flag = nationality.nationality.find(
     (item) => item.value === nationalityProp || item.value === "OTHER",
   )?.flag;
-  const matchingRate = filter ? Number(Number(filter).toFixed()) : null;
+  const matchingRate =
+    filter !== undefined ? Number(Number(filter).toFixed()) : null;
   const matchingRateColor = matchingRate
     ? matchingRate < 50
       ? "red"
