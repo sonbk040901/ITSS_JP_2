@@ -14,7 +14,7 @@ import {
 } from "states/slices/auth";
 import { nationality, province } from "utils";
 
-interface PersonalProfileProps {}
+interface PersonalProfileProps { }
 
 const PersonalProfile: FC<PersonalProfileProps> = () => {
   const [isView, setIsView] = useState<boolean>(true);
@@ -79,7 +79,7 @@ const PersonalProfile: FC<PersonalProfileProps> = () => {
           />
         </Badge>
       </div>
-      <div className="grid grid-cols-2 grid-rows-6 gap-4">
+      <div className="grid grid-cols-2 grid-rows-5 gap-4">
         <InfoItem
           name="name"
           label="名前"
@@ -109,9 +109,10 @@ const PersonalProfile: FC<PersonalProfileProps> = () => {
           options={nationalityOptions}
         />
         <InfoItem
-          label="パスワード"
-          type="password"
+          name="phone"
+          label="電話番号"
           viewOnly={isView}
+          defaultValue={profile?.phone || ""}
         />
         <InfoItem
           label="証明書"
@@ -119,19 +120,8 @@ const PersonalProfile: FC<PersonalProfileProps> = () => {
           accept="image/png"
           viewOnly={isView}
         />
-        <InfoItem
-          name="phone"
-          label="電話番号"
-          viewOnly={isView}
-          defaultValue={profile?.phone || ""}
-        />
-        <div className="row-span-3 overflow-scroll text-center">
-          <Image
-            height={230}
-            src={profile?.level ? getCertificateImage(profile?.level) : ""}
-            alt="avatar"
-          />
-        </div>
+
+
         <InfoItem
           name="province"
           label="市"
@@ -140,6 +130,13 @@ const PersonalProfile: FC<PersonalProfileProps> = () => {
           defaultValue={profile?.province}
           options={addressOptions}
         />
+        <div className="row-span-3 overflow-scroll text-center">
+          <Image
+            height={230}
+            src={profile?.level ? getCertificateImage(profile?.level) : ""}
+            alt="avatar"
+          />
+        </div>
         <InfoItem
           name="level"
           label="レベル"
