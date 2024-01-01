@@ -1,8 +1,8 @@
+import { getCertificateImage } from "@/utils/certificate";
 import { UploadOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Button, ConfigProvider, Image, Upload } from "antd";
 import useMessage from "antd/es/message/useMessage";
 import { DefaultOptionType } from "antd/es/select";
-import jlpt from "assets/jlpt.svg";
 import InfoItem from "components/profile/InfoItem";
 import dayjs from "dayjs";
 import { FC, FormEvent, useEffect, useState } from "react";
@@ -128,7 +128,7 @@ const PersonalProfile: FC<PersonalProfileProps> = () => {
         <div className="row-span-3 overflow-scroll text-center">
           <Image
             height={230}
-            src={jlpt}
+            src={getCertificateImage(profile?.level || 5)}
             alt="avatar"
           />
         </div>
