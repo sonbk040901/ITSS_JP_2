@@ -17,6 +17,7 @@ import {
   selectProfileUserInfo,
 } from "@/states/slices/profile";
 import { nationality } from "@/utils";
+import { getCertificateImage } from "@/utils/certificate";
 import { getProvinceByValue } from "@/utils/province";
 import { Badge, Button, ConfigProvider, Image, Popover } from "antd";
 import Card from "antd/es/card/Card";
@@ -24,7 +25,6 @@ import useMessage from "antd/es/message/useMessage";
 import Link from "antd/es/typography/Link";
 import avt from "assets/avatar/a1.svg";
 import back from "assets/back.svg";
-import jlpt from "assets/jlpt.svg";
 import { FC, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -38,6 +38,7 @@ const Profile: FC = () => {
   const bookmarkStatus = useAppSelector(selectBookmarkStatus);
   const bookMarkId = useAppSelector(selectBookmarkId);
   const [messApi, messContextHolder] = useMessage();
+  const certificateImg = getCertificateImage(userInfo?.level || 5);
   useEffect(() => {
     if (id == currentUserId || !id) {
       navigate("/profile");
@@ -252,8 +253,8 @@ const Profile: FC = () => {
             <span>証明書</span>
             <span className="w-96">
               <Image
-                src={jlpt}
-                alt=""
+                src={certificateImg}
+                alt="certificate"
               />
             </span>
           </div>
