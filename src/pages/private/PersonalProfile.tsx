@@ -133,7 +133,7 @@ const PersonalProfile: FC<PersonalProfileProps> = () => {
         <div className="row-span-3 overflow-scroll text-center">
           <Image
             height={230}
-            src={getCertificateImage(profile?.level || 5)}
+            src={profile?.level ? getCertificateImage(profile?.level) : ""}
             alt="avatar"
           />
         </div>
