@@ -92,8 +92,8 @@ const Profile: FC = () => {
         key={(id || "0") + i}
         className="flex items-center justify-between border-b-2 my-4"
       >
-        <span>{label}</span>
-        <span>{value}</span>
+        <span style={{ fontSize: 20 }}>{label}</span>
+        <span style={{ fontSize: '16px', fontWeight: 400 }}>{value}</span>
       </div>
     ));
   };
@@ -119,7 +119,7 @@ const Profile: FC = () => {
           src={back}
           className="h-6 aspect-auto"
         />
-        <span className="font-bold text-xl text-[#5591EB]">BACK</span>
+        <span className="font-bold text-xl text-[#5591EB]">戻る</span>
       </div>
       <div className="flex flex-row justify-between items-start py-2 gap-10 overflow-scroll">
         <Card className="shadow-md w-[300px] bg-[#EFF6FC] border-[#5591EB]">
@@ -141,12 +141,12 @@ const Profile: FC = () => {
                 alt="avatar"
               />
             </Badge>
-            <div className=" m-2 px-2 text-center">{userInfo?.name}</div>
+            <div className=" m-2 px-2 text-center text-xl font-semibold ">{userInfo?.name}</div>
             <div className=" m-2 px-2 flex flex-col">
               <div className="flex-grow">
                 <div className="flex flex-row">
-                  <div className="flex-grow-[1]">性別</div>
-                  <div className="flex-grow-[1]">
+                  <div className="flex-grow-[1] text-base " >性別</div>
+                  <div className="flex-grow-[1] text-base">
                     {["男性", "女性"][(userInfo?.gender || 1) - 1]}
                   </div>
                 </div>
@@ -156,8 +156,8 @@ const Profile: FC = () => {
             <div className=" m-2 px-2 flex flex-col">
               <div className="flex-grow">
                 <div className="flex flex-row">
-                  <div className="flex-grow-[1]">歳</div>
-                  <div className="flex-grow-[1]">
+                  <div className="flex-grow-[1] text-base">歳</div>
+                  <div className="flex-grow-[1] text-base">
                     {new Date().getFullYear() -
                       new Date(userInfo?.birthday || 1900).getFullYear()}
                   </div>
@@ -168,8 +168,8 @@ const Profile: FC = () => {
             <div className=" m-2 px-2 flex flex-col">
               <div className="flex-grow">
                 <div className="flex flex-row">
-                  <div className="flex-grow-[1]">国籍</div>
-                  <div className="flex-grow-[1]">
+                  <div className="flex-grow-[1] text-base">国籍</div>
+                  <div className="flex-grow-[1] text-base">
                     {
                       nationality.nationality.find(
                         (n) => n.value === userInfo?.nationality,
@@ -203,7 +203,7 @@ const Profile: FC = () => {
                   <Button
                     type="primary"
                     className="font-bold"
-                    // danger
+                  // danger
                   >
                     友達になった
                   </Button>
@@ -249,7 +249,7 @@ const Profile: FC = () => {
         <Card className="w-[600px] text-2xl font-semibold h-fit shadow-md">
           {renderInfo()}
           <div className="flex items-start justify-between my-4">
-            <span>証明書</span>
+            <span style={{ fontSize: 20 }}>証明書</span>
             <span className="w-96">
               <Image
                 src={jlpt}
