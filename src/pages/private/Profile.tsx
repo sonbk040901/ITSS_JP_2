@@ -38,7 +38,9 @@ const Profile: FC = () => {
   const bookmarkStatus = useAppSelector(selectBookmarkStatus);
   const bookMarkId = useAppSelector(selectBookmarkId);
   const [messApi, messContextHolder] = useMessage();
-  const certificateImg = getCertificateImage(userInfo?.level || 5);
+  const certificateImg = userInfo?.level
+    ? getCertificateImage(userInfo?.level)
+    : null;
   useEffect(() => {
     if (id == currentUserId || !id) {
       navigate("/profile");
@@ -252,10 +254,12 @@ const Profile: FC = () => {
           <div className="flex items-start justify-between my-4">
             <span style={{ fontSize: 20 }}>証明書</span>
             <span className="w-96">
-              <Image
-                src={certificateImg}
-                alt="certificate"
-              />
+              {certificateImg ? (
+                <Image
+                  src={certificateImg}
+                  alt="certificate"
+                />
+              ):<div className="text-end w-full">N/A</div>}
             </span>
           </div>
         </Card>
